@@ -1,29 +1,67 @@
-### IntelliJ IDEA ###
+# Arquivos compilados Java
+*.class
+*.jar
+!lib/*.jar
+*.war
+*.ear
+*.nar
+
+# Arquivos gerados pelo build
+target/
+build/
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
+# Arquivos de configuração de IDEs
+.idea/
 .vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
+.classpath
+.metadata
+.recommenders
 
-### Mac OS ###
+# Arquivos temporários
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*~
+
+# Arquivos do sistema operacional
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Arquivos de configuração sensível
+application.properties
+application-local.properties
+*.env
+.env
+
+# Dependências Maven/Gradle
+.mvn/wrapper/maven-wrapper.jar
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Logs de aplicação
+logs/
+*.log.*
+
+# Arquivos de teste temporários
+test-output/
+test-results/
+
+# Arquivos de backup
+*.bak
+*.backup
