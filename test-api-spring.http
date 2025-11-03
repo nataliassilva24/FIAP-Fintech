@@ -1,0 +1,440 @@
+### Arquivo de testes da API FIAP Fintech - Spring Boot
+### Use com REST Client extension (VS Code) ou Postman
+
+### Variáveis
+@baseUrl = http://localhost:8080/api
+@contentType = application/json
+
+### Health Check (Spring Boot Actuator)
+GET http://localhost:8080/actuator/health
+
+### Swagger UI
+GET http://localhost:8080/swagger-ui.html
+
+### API Documentation
+GET http://localhost:8080/api-docs
+
+### ====================================
+### USUÁRIOS - CRUD COMPLETO
+### ====================================
+
+### 1. Listar todos os usuários
+GET {{baseUrl}}/usuarios
+
+### 2. Criar usuário
+POST {{baseUrl}}/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "João Silva Santos",
+  "email": "joao.silva@email.com",
+  "senha": "senha123456",
+  "dataNascimento": "1990-01-15",
+  "genero": "MASCULINO"
+}
+
+### 3. Criar segundo usuário
+POST {{baseUrl}}/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "Maria Oliveira Costa",
+  "email": "maria.oliveira@email.com",
+  "senha": "minhasenha789",
+  "dataNascimento": "1985-07-22",
+  "genero": "FEMININO"
+}
+
+### 4. Buscar usuário por ID
+GET {{baseUrl}}/usuarios/1
+
+### 5. Buscar usuário por email
+GET {{baseUrl}}/usuarios/email/joao.silva@email.com
+
+### 6. Autenticar usuário
+POST {{baseUrl}}/usuarios/auth
+Content-Type: {{contentType}}
+
+{
+  "email": "joao.silva@email.com",
+  "senha": "senha123456"
+}
+
+### 7. Listar usuários ativos
+GET {{baseUrl}}/usuarios/ativos
+
+### 8. Atualizar usuário
+PUT {{baseUrl}}/usuarios/1
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "João Silva Santos Atualizado",
+  "email": "joao.santos@email.com",
+  "senha": "senha123456",
+  "dataNascimento": "1990-01-15",
+  "genero": "MASCULINO"
+}
+
+### 9. Desativar usuário
+PATCH {{baseUrl}}/usuarios/1/desativar
+
+### 10. Ativar usuário
+PATCH {{baseUrl}}/usuarios/1/ativar
+
+### ====================================
+### TRANSAÇÕES - GESTÃO FINANCEIRA
+### ====================================
+
+### 1. Listar todas as transações
+GET {{baseUrl}}/transacoes
+
+### 2. Criar transação manual
+POST {{baseUrl}}/transacoes
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "tipoTransacao": "CREDITO",
+  "categoria": "SALARIO",
+  "descricao": "Salário mensal de Janeiro",
+  "valor": 4500.00,
+  "data": "2024-01-05"
+}
+
+### 3. Registrar receita (endpoint específico)
+POST {{baseUrl}}/transacoes/receita
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "categoria": "FREELANCE",
+  "descricao": "Projeto de consultoria",
+  "valor": 2000.00,
+  "data": "2024-01-10"
+}
+
+### 4. Registrar despesa (endpoint específico)
+POST {{baseUrl}}/transacoes/despesa
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "categoria": "ALIMENTACAO",
+  "descricao": "Supermercado",
+  "valor": 350.00,
+  "data": "2024-01-12"
+}
+
+### 5. Buscar transação por ID
+GET {{baseUrl}}/transacoes/1
+
+### 6. Listar transações por usuário
+GET {{baseUrl}}/transacoes/usuario/1
+
+### 7. Listar transações por tipo
+GET {{baseUrl}}/transacoes/tipo/CREDITO
+
+### 8. Listar transações por categoria
+GET {{baseUrl}}/transacoes/categoria/SALARIO
+
+### 9. Calcular saldo do usuário
+GET {{baseUrl}}/transacoes/usuario/1/saldo
+
+### 10. Calcular total de receitas
+GET {{baseUrl}}/transacoes/usuario/1/receitas
+
+### 11. Calcular total de despesas
+GET {{baseUrl}}/transacoes/usuario/1/despesas
+
+### 12. Atualizar transação
+PUT {{baseUrl}}/transacoes/1
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "tipoTransacao": "CREDITO",
+  "categoria": "SALARIO",
+  "descricao": "Salário mensal de Janeiro - ATUALIZADO",
+  "valor": 4800.00,
+  "data": "2024-01-05"
+}
+
+### 13. Deletar transação
+DELETE {{baseUrl}}/transacoes/1
+
+### ====================================
+### INVESTIMENTOS - CARTEIRA
+### ====================================
+
+### 1. Listar todos os investimentos
+GET {{baseUrl}}/investimentos
+
+### 2. Criar investimento manual
+POST {{baseUrl}}/investimentos
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "tipo": "CDB",
+  "valorInvestido": 5000.00,
+  "dataAplicacao": "2024-01-08"
+}
+
+### 3. Aplicar investimento (endpoint específico)
+POST {{baseUrl}}/investimentos/aplicar
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "tipo": "TESOURO_SELIC",
+  "valor": 3000.00,
+  "dataAplicacao": "2024-01-15"
+}
+
+### 4. Buscar investimento por ID
+GET {{baseUrl}}/investimentos/1
+
+### 5. Listar investimentos por usuário
+GET {{baseUrl}}/investimentos/usuario/1
+
+### 6. Listar investimentos ativos
+GET {{baseUrl}}/investimentos/ativos
+
+### 7. Listar investimentos ativos por usuário
+GET {{baseUrl}}/investimentos/usuario/1/ativos
+
+### 8. Listar investimentos por tipo
+GET {{baseUrl}}/investimentos/tipo/CDB
+
+### 9. Calcular total investido pelo usuário
+GET {{baseUrl}}/investimentos/usuario/1/total
+
+### 10. Calcular total investido ativo
+GET {{baseUrl}}/investimentos/usuario/1/total-ativo
+
+### 11. Resgatar investimento
+PATCH {{baseUrl}}/investimentos/1/resgatar
+
+### 12. Atualizar investimento
+PUT {{baseUrl}}/investimentos/1
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "tipo": "CDB",
+  "valorInvestido": 5500.00,
+  "dataAplicacao": "2024-01-08"
+}
+
+### 13. Deletar investimento
+DELETE {{baseUrl}}/investimentos/1
+
+### ====================================
+### METAS FINANCEIRAS - OBJETIVOS
+### ====================================
+
+### 1. Listar todas as metas
+GET {{baseUrl}}/metas
+
+### 2. Criar meta manual
+POST {{baseUrl}}/metas
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "nome": "Comprar Carro",
+  "descricao": "Economizar para carro 0km",
+  "categoria": "CARRO",
+  "valorNecessario": 45000.00,
+  "valorAcumulado": 5000.00,
+  "dataLimite": "2024-12-31"
+}
+
+### 3. Criar meta (endpoint específico)
+POST {{baseUrl}}/metas/criar
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "nome": "Viagem Europa",
+  "descricao": "Viagem de férias para Europa",
+  "categoria": "VIAGEM",
+  "valorNecessario": 18000.00,
+  "dataLimite": "2024-11-30"
+}
+
+### 4. Buscar meta por ID
+GET {{baseUrl}}/metas/1
+
+### 5. Listar metas por usuário
+GET {{baseUrl}}/metas/usuario/1
+
+### 6. Listar metas ativas
+GET {{baseUrl}}/metas/ativas
+
+### 7. Listar metas ativas por usuário
+GET {{baseUrl}}/metas/usuario/1/ativas
+
+### 8. Listar metas por categoria
+GET {{baseUrl}}/metas/categoria/VIAGEM
+
+### 9. Listar metas por status
+GET {{baseUrl}}/metas/status/ATIVA
+
+### 10. Adicionar valor à meta
+PATCH {{baseUrl}}/metas/1/adicionar-valor
+Content-Type: {{contentType}}
+
+{
+  "valor": 1000.00
+}
+
+### 11. Calcular total necessário das metas ativas
+GET {{baseUrl}}/metas/usuario/1/total-necessario
+
+### 12. Calcular total acumulado das metas ativas
+GET {{baseUrl}}/metas/usuario/1/total-acumulado
+
+### 13. Contar metas ativas
+GET {{baseUrl}}/metas/usuario/1/estatisticas/ativas
+
+### 14. Contar metas concluídas
+GET {{baseUrl}}/metas/usuario/1/estatisticas/concluidas
+
+### 15. Atualizar meta
+PUT {{baseUrl}}/metas/1
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 1,
+  "nome": "Comprar Carro Novo Modelo",
+  "descricao": "Economizar para carro 0km modelo 2024",
+  "categoria": "CARRO",
+  "valorNecessario": 50000.00,
+  "valorAcumulado": 7000.00,
+  "dataLimite": "2024-12-31"
+}
+
+### 16. Deletar meta
+DELETE {{baseUrl}}/metas/1
+
+### ====================================
+### FLUXO COMPLETO DE TESTE
+### ====================================
+
+### Cenário: Usuário completo com transações, investimentos e metas
+
+# 1. Criar usuário
+POST {{baseUrl}}/usuarios/registrar
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "Carlos Pereira",
+  "email": "carlos@email.com",
+  "senha": "carlos123",
+  "dataNascimento": "1988-12-10",
+  "genero": "MASCULINO"
+}
+
+### 2. Autenticar
+POST {{baseUrl}}/usuarios/auth
+Content-Type: {{contentType}}
+
+{
+  "email": "carlos@email.com",
+  "senha": "carlos123"
+}
+
+### 3. Adicionar receita
+POST {{baseUrl}}/transacoes/receita
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 3,
+  "categoria": "SALARIO",
+  "descricao": "Salário",
+  "valor": 6000.00
+}
+
+### 4. Adicionar despesa
+POST {{baseUrl}}/transacoes/despesa
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 3,
+  "categoria": "MORADIA",
+  "descricao": "Aluguel",
+  "valor": 1500.00
+}
+
+### 5. Investir
+POST {{baseUrl}}/investimentos/aplicar
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 3,
+  "tipo": "ACAO",
+  "valor": 2000.00
+}
+
+### 6. Criar meta
+POST {{baseUrl}}/metas/criar
+Content-Type: {{contentType}}
+
+{
+  "idUsuario": 3,
+  "nome": "Casa Própria",
+  "categoria": "CASA",
+  "valorNecessario": 80000.00,
+  "dataLimite": "2025-12-31"
+}
+
+### 7. Verificar saldo
+GET {{baseUrl}}/transacoes/usuario/3/saldo
+
+### 8. Ver investimentos ativos
+GET {{baseUrl}}/investimentos/usuario/3/ativos
+
+### 9. Ver metas ativas
+GET {{baseUrl}}/metas/usuario/3/ativas
+
+### ====================================
+### TESTES DE ERRO (VALIDAÇÃO)
+### ====================================
+
+### Erro 400 - Dados inválidos
+POST {{baseUrl}}/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "",
+  "email": "email-inválido",
+  "senha": "123"
+}
+
+### Erro 404 - Usuário não encontrado
+GET {{baseUrl}}/usuarios/999999
+
+### Erro 409 - Email duplicado
+POST {{baseUrl}}/usuarios
+Content-Type: {{contentType}}
+
+{
+  "nomeCompleto": "Outro Usuário",
+  "email": "joao.silva@email.com",
+  "senha": "senha123",
+  "dataNascimento": "1992-05-10",
+  "genero": "MASCULINO"
+}
+
+### Erro 401 - Credenciais inválidas
+POST {{baseUrl}}/usuarios/auth
+Content-Type: {{contentType}}
+
+{
+  "email": "joao.silva@email.com",
+  "senha": "senhaerrada"
+}
+
+
+
