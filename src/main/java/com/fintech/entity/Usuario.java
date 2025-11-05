@@ -50,9 +50,6 @@ public class Usuario {
     @Column(name = "DATA_CADASTRO", nullable = false)
     private LocalDateTime dataCadastro;
 
-    @Column(name = "ULTIMO_LOGIN")
-    private LocalDateTime ultimoLogin;
-
     @Column(name = "ATIVO", length = 1, nullable = false)
     private char ativo;
 
@@ -98,7 +95,7 @@ public class Usuario {
 
     public void autenticar() {
         System.out.println("Autenticando usuário por email: " + email);
-        this.ultimoLogin = LocalDateTime.now();
+        // Login realizado com sucesso
     }
 
     public boolean validarSenha(String senhaFornecida) {
@@ -221,13 +218,6 @@ public class Usuario {
         this.dataCadastro = dataCadastro;
     }
 
-    public LocalDateTime getUltimoLogin() {
-        return ultimoLogin;
-    }
-
-    public void setUltimoLogin(LocalDateTime ultimoLogin) {
-        this.ultimoLogin = ultimoLogin;
-    }
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo ? 'S' : 'N';

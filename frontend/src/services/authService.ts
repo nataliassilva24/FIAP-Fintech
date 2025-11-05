@@ -1,12 +1,17 @@
-// Simulação de serviço de autenticação com localStorage
+// Serviço de autenticação integrado com API Backend
+const API_BASE_URL = 'http://localhost:8080';
+
 export interface Usuario {
-    id: number;
+    idUsuario: number;
     nomeCompleto: string;
     email: string;
     dataNascimento: string;
     genero: string;
-    senha: string;
-    dataCriacao: string;
+    senha?: string;
+    dataCadastro: string;
+    ativo: boolean;
+    idade: number;
+    maiorIdade: boolean;
 }
 
 export interface LoginResponse {
@@ -23,85 +28,89 @@ export interface CadastroResponse {
 }
 
 class AuthService {
-    private readonly USERS_KEY = 'fiap_fintech_users';
     private readonly CURRENT_USER_KEY = 'fiap_fintech_current_user';
     private readonly TOKEN_KEY = 'fiap_fintech_token';
 
-    // Cadastrar novo usuário
-    cadastrar(dadosUsuario: Omit<Usuario, 'id' | 'dataCriacao'>): CadastroResponse {
+    // Cadastrar novo usuário via API
+    async cadastrar(dadosUsuario: {
+        nomeCompleto: string;
+        email: string;
+        dataNascimento: string;
+        genero: string;
+        senha: string;
+    }): Promise<CadastroResponse> {
         try {
-            const usuarios = this.getUsuarios();
+            const response = await fetch(`${API_BASE_URL}/api/usuarios/registrar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dadosUsuario)
+            });
 
-            // Verificar se email já existe
-            const emailExiste = usuarios.find(u => u.email.toLowerCase() === dadosUsuario.email.toLowerCase());
-            if (emailExiste) {
+            if (response.ok) {
+                const usuario = await response.json();
+                return {
+                    success: true,
+                    message: 'Cadastro realizado com sucesso!',
+                    usuario: usuario
+                };
+            } else {
+                const errorData = await response.json();
                 return {
                     success: false,
-                    message: 'Este e-mail já está cadastrado!'
+                    message: errorData.erro || 'Erro ao realizar cadastro. Verifique os dados e tente novamente.'
                 };
             }
-
-            // Criar novo usuário
-            const novoUsuario: Usuario = {
-                ...dadosUsuario,
-                id: Date.now(), // ID simples baseado em timestamp
-                dataCriacao: new Date().toISOString()
-            };
-
-            // Salvar usuário
-            usuarios.push(novoUsuario);
-            localStorage.setItem(this.USERS_KEY, JSON.stringify(usuarios));
-
-            // Auto-login após cadastro
-            this.setCurrentUser(novoUsuario);
-
-            return {
-                success: true,
-                message: 'Cadastro realizado com sucesso!',
-                usuario: novoUsuario
-            };
         } catch (error) {
+            console.error('Erro na API de cadastro:', error);
             return {
                 success: false,
-                message: 'Erro interno. Tente novamente.'
+                message: 'Erro de conexão. Verifique sua internet e tente novamente.'
             };
         }
     }
 
-    // Fazer login
-    login(email: string, senha: string): LoginResponse {
+    // Fazer login via API
+    async login(email: string, senha: string): Promise<LoginResponse> {
         try {
-            const usuarios = this.getUsuarios();
+            const response = await fetch(`${API_BASE_URL}/api/usuarios/auth`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, senha })
+            });
 
-            const usuario = usuarios.find(u =>
-                u.email.toLowerCase() === email.toLowerCase() &&
-                u.senha === senha
-            );
+            if (response.ok) {
+                const data = await response.json();
+                const usuario = data.usuario;
+                
+                // Gerar token simples para manter compatibilidade
+                const token = this.generateToken(usuario);
 
-            if (!usuario) {
+                // Salvar sessão no localStorage
+                this.setCurrentUser(usuario);
+                localStorage.setItem(this.TOKEN_KEY, token);
+
+                return {
+                    success: true,
+                    message: 'Login realizado com sucesso!',
+                    usuario: usuario,
+                    token: token
+                };
+            } else {
+                const errorData = await response.json();
                 return {
                     success: false,
-                    message: 'E-mail ou senha incorretos!'
+                    message: errorData.erro || 'E-mail ou senha incorretos!'
                 };
             }
-
-            // Gerar token simples
-            const token = this.generateToken(usuario);
-
-            // Salvar sessão
-            this.setCurrentUser(usuario);
-            localStorage.setItem(this.TOKEN_KEY, token);
-
-            return {
-                success: true,
-                message: 'Login realizado com sucesso!',
-                usuario: usuario,
-                token: token
-            };
         } catch (error) {
+            console.error('Erro na API de login:', error);
             return {
                 success: false,
-                message: 'Erro interno. Tente novamente.'
+                message: 'Erro de conexão. Verifique sua internet e tente novamente.'
             };
         }
     }
@@ -134,44 +143,31 @@ class AuthService {
         return localStorage.getItem(this.TOKEN_KEY);
     }
 
-    // Obter todos os usuários cadastrados
-    private getUsuarios(): Usuario[] {
-        try {
-            const users = localStorage.getItem(this.USERS_KEY);
-            return users ? JSON.parse(users) : [];
-        } catch {
-            return [];
-        }
-    }
-
-    // Salvar usuário atual
+    // Salvar usuário atual na sessão
     private setCurrentUser(usuario: Usuario): void {
         localStorage.setItem(this.CURRENT_USER_KEY, JSON.stringify(usuario));
     }
 
-    // Gerar token simples
+    // Gerar token simples para compatibilidade
     private generateToken(usuario: Usuario): string {
         const payload = {
-            id: usuario.id,
+            id: usuario.idUsuario,
             email: usuario.email,
             exp: Date.now() + (24 * 60 * 60 * 1000) // 24 horas
         };
         return btoa(JSON.stringify(payload));
     }
 
-    // Estatísticas para desenvolvimento
+    // Estatísticas do usuário atual
     getStats() {
-        const usuarios = this.getUsuarios();
         return {
-            totalUsuarios: usuarios.length,
             usuarioAtual: this.getCurrentUser()?.nomeCompleto || 'Nenhum',
             isAuthenticated: this.isAuthenticated()
         };
     }
 
-    // Limpar todos os dados (para desenvolvimento)
+    // Limpar dados da sessão
     clearAllData(): void {
-        localStorage.removeItem(this.USERS_KEY);
         localStorage.removeItem(this.CURRENT_USER_KEY);
         localStorage.removeItem(this.TOKEN_KEY);
     }
