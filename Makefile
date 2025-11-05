@@ -27,11 +27,12 @@ help: ## Mostra ajuda com todos os comandos disponíveis
 	@echo "======================================"
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 	@echo ""
-	@echo "🎯 COMANDO PRINCIPAL:"
-	@echo "   make start-all    # Inicia projeto completo"
+	@echo "🎯 COMANDOS PRINCIPAIS:"
+	@echo "   make install      # 1. Instala dependências (uma vez só)"
+	@echo "   make start        # 2. Inicia projeto completo"
 	@echo ""
 
-install: ## Instala todas as dependências necessárias
+install: ## Instala todas as dependências necessárias (executar apenas uma vez)
 	@echo "📦 Instalando dependências..."
 	@if ! command -v java >/dev/null 2>&1; then \
 		echo "☕ Instalando Java..."; \
@@ -45,7 +46,26 @@ install: ## Instala todas as dependências necessárias
 		echo "🔧 Instalando Maven..."; \
 		brew install maven; \
 	fi
-	@echo "✅ Dependências instaladas!"
+	@cd frontend && npm install
+	@echo ""
+	@echo "✅ DEPENDÊNCIAS INSTALADAS COM SUCESSO!"
+	@echo "======================================"
+	@echo "🚀 Próximo passo: make start"
+
+start: setup-logs check-oracle start-backend start-frontend test-integration ## 🚀 Inicia projeto completo (comando principal)
+	@echo ""
+	@echo "🎉 SISTEMA FIAP FINTECH INICIADO COM SUCESSO!"
+	@echo "==========================================="
+	@echo "🎨 Frontend: http://localhost:$(FRONTEND_PORT)"
+	@echo "🔧 Backend:  http://localhost:$(BACKEND_PORT)/api"
+	@echo "📚 Swagger:  http://localhost:$(BACKEND_PORT)/swagger-ui.html"
+	@echo "🗄️  Oracle:   Tabelas criadas e funcionais"
+	@echo ""
+	@echo "📝 Logs disponíveis em:"
+	@echo "   - Frontend: logs/frontend.log"
+	@echo "   - Backend:  logs/backend.log"
+	@echo ""
+	@echo "🛑 Para parar: make stop-all"
 
 check-oracle: ## Verifica se Oracle está acessível e se tabelas existem
 	@echo "🔍 Verificando conexão Oracle..."
@@ -133,19 +153,7 @@ start-backend: ## Inicia o backend Spring Boot em background
 setup-logs: ## Cria diretório de logs
 	@mkdir -p logs
 
-start-all: setup-logs install check-oracle start-backend start-frontend test-integration ## 🚀 Inicia projeto completo (comando principal)
-	@echo ""
-	@echo "🎉 SISTEMA FIAP FINTECH INICIADO!"
-	@echo "=================================="
-	@echo "🎨 Frontend: http://localhost:$(FRONTEND_PORT)"
-	@echo "🔧 Backend:  http://localhost:$(BACKEND_PORT)/api"
-	@echo "🗄️  Oracle:   Tabelas criadas e funcionais"
-	@echo ""
-	@echo "📝 Logs disponíveis em:"
-	@echo "   - Frontend: logs/frontend.log"
-	@echo "   - Backend:  logs/backend.log"
-	@echo ""
-	@echo "🛑 Para parar: make stop-all"
+start-all: start ## Alias para make start (retrocompatibilidade)
 
 test-integration: ## Testa integração completa frontend-backend-oracle
 	@echo "🧪 Testando integração..."
@@ -193,7 +201,7 @@ logs: ## Mostra logs em tempo real
 	@tail -f logs/*.log 2>/dev/null || echo "Nenhum log disponível"
 
 dev: ## Modo desenvolvimento (logs visíveis)
-	@echo "🔧 Iniciando em modo desenvolvimento..."
+	@echo "🔧 Modo desenvolvimento - execute os comandos manualmente:"
 	@$(MAKE) setup-logs install check-oracle
 	@echo "🎨 Frontend (terminal 1):"
 	@echo "cd frontend && npm run dev"
