@@ -189,7 +189,7 @@ const TransactionsPage: React.FC = () => {
             background: '#f8fafc',
             fontFamily: '"Inter", sans-serif'
         }}>
-            {/* Header - Idêntico ao Dashboard */}
+            {/* Header Clean */}
             <header style={{
                 background: '#ffffff',
                 borderBottom: '1px solid #e2e8f0',
