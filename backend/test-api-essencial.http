@@ -1,0 +1,69 @@
+### API FIAP Fintech - Testes Essenciais
+### Use com REST Client (VS Code) ou IntelliJ
+
+@baseUrl = http://localhost:8080/api
+
+### ===================
+### FLUXO PRINCIPAL
+### ===================
+
+### 1. Health Check
+GET http://localhost:8080/actuator/health
+
+### 2. Swagger UI  
+GET http://localhost:8080/swagger-ui.html
+
+### 3. Listar usuários
+GET {{baseUrl}}/usuarios
+
+### 4. Saldo do usuário
+GET {{baseUrl}}/transacoes/usuario/1/saldo
+
+### 5. Transações do usuário
+GET {{baseUrl}}/transacoes/usuario/1
+
+### 6. Investimentos do usuário
+GET {{baseUrl}}/investimentos/usuario/1
+
+### 7. Metas do usuário
+GET {{baseUrl}}/metas/usuario/1
+
+### ===================
+### TESTES DE CRIAÇÃO
+### ===================
+
+### Criar transação
+POST {{baseUrl}}/transacoes/receita
+Content-Type: application/json
+
+{
+  "idUsuario": 1,
+  "categoria": "TESTE",
+  "descricao": "Teste de API",
+  "valor": 100.00
+}
+
+### Criar investimento
+POST {{baseUrl}}/investimentos
+Content-Type: application/json
+
+{
+  "idUsuario": 1,
+  "tipo": "CDB",
+  "valorInvestido": 1000.00,
+  "dataAplicacao": "2024-01-15"
+}
+
+### Contribuir para meta
+PATCH {{baseUrl}}/metas/1/adicionar-valor
+Content-Type: application/json
+
+{
+  "valor": "500.00"
+}
+
+### ===================
+### DOCUMENTAÇÃO COMPLETA
+### ===================
+### 📚 Para documentação completa e testes interativos:
+### 👉 http://localhost:8080/swagger-ui.html
