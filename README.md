@@ -61,22 +61,26 @@ make oracle-status
 
 ## 🎯 **Como Usar o Sistema**
 
-### **📋 Opção 1: Usuário de Demonstração (Recomendado para Avaliação)**
+### **🚀 Passo 1: Iniciar Projeto**
 ```bash
-# Depois do make start, em outro terminal:
+make install  # Instalar dependências (uma vez)
+make start    # Iniciar sistema completo
+```
+
+### **👤 Passo 2: Escolher Forma de Acesso**
+
+#### **📋 Opção A: Dados de Demonstração (Recomendado para Professores)**
+```bash
+# Em outro terminal, obter credenciais de teste:
 make create-demo-data
 ```
 
-**🔑 Credenciais de Teste:**
-- **Email:** `professor@fiap.edu.br`
-- **Senha:** `fiap2024`  
-- **Dados:** Transações + Investimentos + Metas pré-criados
-
-### **📋 Opção 2: Criar Conta Nova**
+#### **📋 Opção B: Criar Seu Próprio Usuário**
 1. **Acesse:** http://localhost:3000
-2. **Clique** em "→ Iniciar sessão" no canto superior direito
-3. **Cadastre-se** na aba "CADASTRAR" 
-4. **Explore** as funcionalidades: Dashboard, Transações, Investimentos, Metas
+2. **Clique:** "→ Iniciar sessão"
+3. **Aba:** "CADASTRAR"
+4. **Preencha:** seus dados pessoais
+5. **Explore:** todas as funcionalidades do sistema
 
 ---
 
