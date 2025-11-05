@@ -603,60 +603,20 @@ const GoalsPage: React.FC = () => {
                                                 </div>
                                             </div>
                                             
-                                            <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <div>
-                                                        <div style={{
-                                                            fontSize: '20px',
-                                                            fontWeight: '700',
-                                                            color: progressColor,
-                                                            marginBottom: '4px'
-                                                        }}>
-                                                            {meta.percentualAlcancado.toFixed(1)}%
-                                                        </div>
-                                                        <div style={{
-                                                            fontSize: '12px',
-                                                            color: '#64748b'
-                                                        }}>
-                                                            {goalService.formatCurrency(meta.valorAcumulado)} de {goalService.formatCurrency(meta.valorNecessario)}
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    {/* Botão Adicionar Contribuição */}
-                                                    {meta.status === 'ATIVA' && !meta.concluida && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                abrirModalContribuicao(meta);
-                                                            }}
-                                                            style={{
-                                                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                                                                color: 'white',
-                                                                border: 'none',
-                                                                borderRadius: '8px',
-                                                                padding: '8px 12px',
-                                                                fontSize: '12px',
-                                                                fontWeight: '600',
-                                                                cursor: 'pointer',
-                                                                transition: 'all 0.2s',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: '4px',
-                                                                boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
-                                                            }}
-                                                            onMouseEnter={(e) => {
-                                                                e.currentTarget.style.transform = 'translateY(-1px)';
-                                                                e.currentTarget.style.boxShadow = '0 4px 8px rgba(16, 185, 129, 0.4)';
-                                                            }}
-                                                            onMouseLeave={(e) => {
-                                                                e.currentTarget.style.transform = 'translateY(0)';
-                                                                e.currentTarget.style.boxShadow = '0 2px 4px rgba(16, 185, 129, 0.3)';
-                                                            }}
-                                                            title={`Adicionar valor à meta "${meta.nome}"`}
-                                                        >
-                                                            💰 + R$
-                                                        </button>
-                                                    )}
+                                            <div style={{ textAlign: 'right' }}>
+                                                <div style={{
+                                                    fontSize: '20px',
+                                                    fontWeight: '700',
+                                                    color: progressColor,
+                                                    marginBottom: '4px'
+                                                }}>
+                                                    {meta.percentualAlcancado.toFixed(1)}%
+                                                </div>
+                                                <div style={{
+                                                    fontSize: '12px',
+                                                    color: '#64748b'
+                                                }}>
+                                                    {goalService.formatCurrency(meta.valorAcumulado)} de {goalService.formatCurrency(meta.valorNecessario)}
                                                 </div>
                                             </div>
                                         </div>
@@ -735,26 +695,31 @@ const GoalsPage: React.FC = () => {
                                                                 abrirModalContribuicao(meta);
                                                             }}
                                                             style={{
-                                                                background: 'none',
+                                                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                                                color: 'white',
                                                                 border: 'none',
-                                                                color: '#10b981',
+                                                                borderRadius: '8px',
+                                                                padding: '8px 16px',
                                                                 fontSize: '12px',
-                                                                fontWeight: '600',
+                                                                fontWeight: '700',
                                                                 cursor: 'pointer',
-                                                                padding: '4px 8px',
-                                                                borderRadius: '4px',
-                                                                transition: 'all 0.2s'
+                                                                transition: 'all 0.2s',
+                                                                boxShadow: '0 3px 6px rgba(16, 185, 129, 0.4)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '6px'
                                                             }}
                                                             onMouseEnter={(e) => {
-                                                                e.currentTarget.style.background = '#f0fdf4';
-                                                                e.currentTarget.style.textDecoration = 'underline';
+                                                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                                                e.currentTarget.style.boxShadow = '0 6px 12px rgba(16, 185, 129, 0.5)';
                                                             }}
                                                             onMouseLeave={(e) => {
-                                                                e.currentTarget.style.background = 'none';
-                                                                e.currentTarget.style.textDecoration = 'none';
+                                                                e.currentTarget.style.transform = 'translateY(0)';
+                                                                e.currentTarget.style.boxShadow = '0 3px 6px rgba(16, 185, 129, 0.4)';
                                                             }}
+                                                            title={`Adicionar valor à meta "${meta.nome}"`}
                                                         >
-                                                            Adicionar valor
+                                                            💵 Adicionar valor
                                                         </button>
                                                     </div>
                                                 )}
@@ -1237,7 +1202,7 @@ const GoalsPage: React.FC = () => {
                                         cursor: (saving || !valorContribuicao) ? 'not-allowed' : 'pointer'
                                     }}
                                 >
-                                    {saving ? '⏳ Adicionando...' : '💰 Adicionar Contribuição'}
+                                    {saving ? '⏳ Adicionando...' : '💵 Adicionar Valor'}
                                 </button>
                             </div>
                         </form>

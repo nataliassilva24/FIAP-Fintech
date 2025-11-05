@@ -131,12 +131,12 @@ class GoalService {
     // Adicionar valor à meta (contribuição)
     async addContribution(idMeta: number, valor: number): Promise<boolean> {
         try {
-            const response = await fetch(`${API_BASE_URL}/metas/${idMeta}/contribuir`, {
-                method: 'PUT',
+            const response = await fetch(`${API_BASE_URL}/metas/${idMeta}/adicionar-valor`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ valor })
+                body: JSON.stringify({ valor: valor.toString() })
             });
 
             if (response.ok) {
