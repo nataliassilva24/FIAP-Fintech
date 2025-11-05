@@ -235,43 +235,8 @@ const InvestmentsPage: React.FC = () => {
                         ))}
                     </nav>
 
-                    {/* User Menu */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '8px 16px',
-                            background: '#f1f5f9',
-                            borderRadius: '24px'
-                        }}>
-                            <div style={{
-                                width: '36px',
-                                height: '36px',
-                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontSize: '14px',
-                                fontWeight: '600'
-                            }}>
-                                {usuario.nomeCompleto.split(' ').map(name => name[0]).join('').substring(0, 2)}
-                            </div>
-                            <div>
-                                <div style={{ color: '#1e293b', fontSize: '14px', fontWeight: '600' }}>
-                                    {usuario.nomeCompleto.split(' ')[0]}
-                                </div>
-                                <div style={{ color: '#64748b', fontSize: '12px' }}>
-                                    {usuario.email}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* User Dropdown */}
-                        <UserDropdown onLogout={handleLogout} />
-                    </div>
+                    {/* User Dropdown */}
+                    <UserDropdown onLogout={handleLogout} />
                 </div>
             </header>
 
