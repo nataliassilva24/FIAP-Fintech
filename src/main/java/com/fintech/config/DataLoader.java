@@ -37,11 +37,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println("🔄 Carregando dados de teste...");
-        
         // Verificar se já existem dados de usuários
         if (usuarioRepository.count() > 0) {
-            System.out.println("⚠️ Dados de usuários já existem, pulando carga inicial");
             return;
         }
         
@@ -49,13 +46,10 @@ public class DataLoader implements CommandLineRunner {
         carregarTransacoes();
         carregarInvestimentos();
         carregarMetas();
-        
-        System.out.println("✅ Dados de teste carregados com sucesso!");
     }
 
 
     private void carregarUsuarios() {
-        System.out.println("👤 Carregando usuários...");
         
         // Usuário 1
         Usuario usuario1 = new Usuario();
@@ -90,12 +84,9 @@ public class DataLoader implements CommandLineRunner {
         usuarioRepository.save(usuario1);
         usuarioRepository.save(usuario2);
         usuarioRepository.save(usuario3);
-        
-        System.out.println("✓ 3 usuários criados");
     }
 
     private void carregarTransacoes() {
-        System.out.println("💰 Carregando transações...");
         
         // Transações do Usuário 1 (João)
         // Receitas
@@ -121,12 +112,9 @@ public class DataLoader implements CommandLineRunner {
                       new BigDecimal("3200.00"), LocalDate.now().minusDays(12));
         criarTransacao(3L, TipoTransacao.DEBITO, "EDUCACAO", "Curso online", 
                       new BigDecimal("450.00"), LocalDate.now().minusDays(8));
-        
-        System.out.println("✓ 8 transações criadas");
     }
 
     private void carregarInvestimentos() {
-        System.out.println("📈 Carregando investimentos...");
         
         // Investimentos do João
         criarInvestimento(1L, TipoInvestimento.CDB, new BigDecimal("5000.00"), 
@@ -143,12 +131,9 @@ public class DataLoader implements CommandLineRunner {
         // Investimentos do Carlos
         criarInvestimento(3L, TipoInvestimento.FII, new BigDecimal("4000.00"), 
                          LocalDate.now().minusDays(18), null);
-        
-        System.out.println("✓ 5 investimentos criados");
     }
 
     private void carregarMetas() {
-        System.out.println("🎯 Carregando metas...");
         
         // Metas do João
         criarMeta(1L, "Viagem Europa", "Economizar para férias na Europa", 
@@ -172,8 +157,6 @@ public class DataLoader implements CommandLineRunner {
         criarMeta(3L, "Especialização", "MBA em Gestão Financeira", 
                  CategoriaMeta.EDUCACAO, new BigDecimal("8000.00"), new BigDecimal("8000.00"), 
                  LocalDate.now().plusMonths(3), StatusMeta.CONCLUIDA); // Já concluída
-        
-        System.out.println("✓ 5 metas criadas");
     }
 
     private void criarTransacao(Long idUsuario, TipoTransacao tipo, String categoria, 

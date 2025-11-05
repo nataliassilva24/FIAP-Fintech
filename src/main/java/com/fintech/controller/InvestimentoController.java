@@ -104,8 +104,6 @@ public class InvestimentoController {
         }
     }
 
-    // Endpoints específicos
-
     @Operation(summary = "Listar investimentos por usuário")
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<Investimento>> listarPorUsuario(

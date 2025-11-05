@@ -105,8 +105,6 @@ public class MetaFinanceiraController {
         }
     }
 
-    // Endpoints específicos
-
     @Operation(summary = "Listar metas por usuário")
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<MetaFinanceira>> listarPorUsuario(
@@ -154,8 +152,6 @@ public class MetaFinanceiraController {
         return ResponseEntity.ok(metas);
     }
 
-    // Operações de valor
-
     @Operation(summary = "Adicionar valor à meta")
     @PatchMapping("/{id}/adicionar-valor")
     public ResponseEntity<?> adicionarValor(
@@ -169,8 +165,6 @@ public class MetaFinanceiraController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-
-    // Cálculos financeiros
 
     @Operation(summary = "Calcular total necessário das metas ativas do usuário")
     @GetMapping("/usuario/{idUsuario}/total-necessario")
@@ -196,8 +190,6 @@ public class MetaFinanceiraController {
         }
     }
 
-    // Operações específicas do negócio
-
     @Operation(summary = "Criar meta completa")
     @PostMapping("/criar")
     public ResponseEntity<?> criarMeta(@RequestBody Map<String, Object> dadosMeta) {
@@ -216,8 +208,6 @@ public class MetaFinanceiraController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-
-    // Estatísticas
 
     @Operation(summary = "Contar metas ativas do usuário")
     @GetMapping("/usuario/{idUsuario}/estatisticas/ativas")

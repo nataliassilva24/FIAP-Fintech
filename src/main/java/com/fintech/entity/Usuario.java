@@ -8,9 +8,7 @@ import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "TB_USUARIO")
@@ -53,9 +51,6 @@ public class Usuario {
     @Column(name = "ATIVO", length = 1, nullable = false)
     private char ativo;
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile(
-        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-    );
     private static final int IDADE_MINIMA = 16;
     private static final int NOME_MIN_LENGTH = 2;
     private static final int SENHA_MIN_LENGTH = 6;
@@ -88,13 +83,11 @@ public class Usuario {
     }
 
     public void registrar() {
-        System.out.println("Registrando usuário: " + nomeCompleto + " <" + email + ">");
         this.dataCadastro = LocalDateTime.now();
         this.ativo = 'S';
     }
 
     public void autenticar() {
-        System.out.println("Autenticando usuário por email: " + email);
         // Login realizado com sucesso
     }
 

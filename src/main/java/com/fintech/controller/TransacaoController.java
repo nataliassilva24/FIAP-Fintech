@@ -104,8 +104,6 @@ public class TransacaoController {
         }
     }
 
-    // Endpoints específicos
-
     @Operation(summary = "Listar transações por usuário")
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<Transacao>> listarPorUsuario(
@@ -133,8 +131,6 @@ public class TransacaoController {
         List<Transacao> transacoes = transacaoService.listarPorCategoria(categoria);
         return ResponseEntity.ok(transacoes);
     }
-
-    // Cálculos financeiros
 
     @Operation(summary = "Calcular saldo do usuário")
     @GetMapping("/usuario/{idUsuario}/saldo")
@@ -171,8 +167,6 @@ public class TransacaoController {
             return ResponseEntity.badRequest().body(Map.of("erro", e.getMessage()));
         }
     }
-
-    // Operações específicas do negócio
 
     @Operation(summary = "Registrar receita")
     @PostMapping("/receita")
