@@ -8,6 +8,7 @@ import DashboardPage from '../pages/Dashboard/DashboardPage';
 import TransactionsPage from '../pages/Transactions/TransactionsPage';
 import InvestmentsPage from '../pages/Investments/InvestmentsPage';
 import GoalsPage from '../pages/Goals/GoalsPage';
+import ProfilePage from '../pages/Profile/ProfilePage';
 
 // Error Page Component
 const ErrorPage: React.FC = () => (
@@ -100,6 +101,9 @@ const AppRouter: React.FC = () => {
                 
                 {/* Real Goals page */}
                 <Route path="/metas" element={<GoalsPage />} />
+                
+                {/* Profile page */}
+                <Route path="/perfil" element={<ProfilePage />} />
                 
                 {/* Placeholder pages (to be extracted) */}
                 <Route path="/cadastro" element={<PlaceholderPage pageName="Cadastro" />} />

@@ -196,7 +196,8 @@ const InvestmentsPage: React.FC = () => {
                             { name: 'Dashboard', path: '/dashboard' },
                             { name: 'Transações', path: '/transacoes' },
                             { name: 'Investimentos', path: '/investimentos' },
-                            { name: 'Metas', path: '/metas' }
+                            { name: 'Metas', path: '/metas' },
+                            { name: 'Perfil', path: '/perfil' }
                         ].map((item, index) => (
                             <button
                                 key={index}
