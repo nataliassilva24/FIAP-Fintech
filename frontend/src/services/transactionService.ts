@@ -74,6 +74,56 @@ class TransactionService {
         }
     }
 
+    // Atualizar transação existente
+    async updateTransaction(transacao: Transacao): Promise<Transacao | null> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/transacoes/${transacao.idTransacao}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    idUsuario: transacao.idUsuario,
+                    tipoTransacao: transacao.tipoTransacao,
+                    categoria: transacao.categoria,
+                    descricao: transacao.descricao,
+                    valor: transacao.valor,
+                    data: transacao.data
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Transação atualizada:', result);
+                return result;
+            } else {
+                throw new Error('Erro ao atualizar transação');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao atualizar transação:', error);
+            return null;
+        }
+    }
+
+    // Deletar transação
+    async deleteTransaction(idTransacao: number): Promise<boolean> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/transacoes/${idTransacao}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                console.log('✅ Transação deletada');
+                return true;
+            } else {
+                throw new Error('Erro ao deletar transação');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao deletar transação:', error);
+            return false;
+        }
+    }
+
     // Formatar valor monetário
     formatCurrency(value: number): string {
         return new Intl.NumberFormat('pt-BR', {

@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
+import Toast from '../../components/common/Toast';
 import { authService } from '../../services/authService';
 import { Transacao, transactionService } from '../../services/transactionService';
 
@@ -7,6 +9,12 @@ const TransactionsPage: React.FC = () => {
     const [transacoes, setTransacoes] = useState<Transacao[]>([]);
     const [loading, setLoading] = useState(true);
     const [showNovaTransacao, setShowNovaTransacao] = useState(false);
+    const [showEditarTransacao, setShowEditarTransacao] = useState(false);
+    const [transacaoEditando, setTransacaoEditando] = useState<Transacao | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [transacaoParaDeletar, setTransacaoParaDeletar] = useState<Transacao | null>(null);
+    const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     // Estado do período selecionado (mesmo padrão do dashboard)
     const [selectedPeriod, setSelectedPeriod] = useState('');
@@ -136,16 +144,118 @@ const TransactionsPage: React.FC = () => {
                     data: new Date().toISOString().split('T')[0]
                 });
 
-                console.log('✅ Transação criada com sucesso!');
+                setToast({ show: true, message: 'Transação criada com sucesso!', type: 'success' });
             } else {
-                alert('❌ Erro ao criar transação. Tente novamente.');
+                setToast({ show: true, message: 'Erro ao criar transação. Tente novamente.', type: 'error' });
             }
         } catch (error) {
             console.error('Erro ao criar transação:', error);
-            alert('❌ Erro interno. Tente novamente.');
+            setToast({ show: true, message: 'Erro interno. Tente novamente.', type: 'error' });
         } finally {
             setSaving(false);
         }
+    };
+
+    // Editar transação
+    const handleEditTransaction = (transacao: Transacao) => {
+        setTransacaoEditando(transacao);
+        setFormData({
+            tipo: transacao.tipoTransacao as 'CREDITO' | 'DEBITO',
+            categoria: transacao.categoria,
+            descricao: transacao.descricao || '',
+            valor: transacao.valor.toString(),
+            data: transacao.data
+        });
+        setShowEditarTransacao(true);
+    };
+
+    const handleSubmitEditTransaction = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!usuario?.idUsuario || !transacaoEditando) return;
+
+        if (!formData.categoria || !formData.descricao || !formData.valor) {
+            alert('❌ Por favor, preencha todos os campos obrigatórios!');
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const transacaoAtualizada = {
+                ...transacaoEditando,
+                categoria: formData.categoria,
+                descricao: formData.descricao,
+                valor: parseFloat(formData.valor),
+                data: formData.data
+                // Nota: Não permitimos alterar o tipo da transação
+            };
+
+            const resultado = await transactionService.updateTransaction(transacaoAtualizada);
+
+            if (resultado) {
+                // Recarregar lista de transações
+                const transacoesAtualizadas = await transactionService.getTransacoesByUser(usuario.idUsuario);
+                setTransacoes(transacoesAtualizadas);
+
+                // Fechar modal e resetar
+                setShowEditarTransacao(false);
+                setTransacaoEditando(null);
+                setFormData({
+                    tipo: 'CREDITO',
+                    categoria: '',
+                    descricao: '',
+                    valor: '',
+                    data: new Date().toISOString().split('T')[0]
+                });
+
+                setToast({ show: true, message: 'Transação atualizada com sucesso!', type: 'success' });
+            } else {
+                setToast({ show: true, message: 'Erro ao atualizar transação. Tente novamente.', type: 'error' });
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar transação:', error);
+            setToast({ show: true, message: 'Erro interno. Tente novamente.', type: 'error' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Deletar transação
+    const handleDeleteTransaction = (transacao: Transacao) => {
+        setTransacaoParaDeletar(transacao);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteTransaction = async () => {
+        if (!transacaoParaDeletar?.idTransacao || !usuario?.idUsuario) return;
+
+        try {
+            const sucesso = await transactionService.deleteTransaction(transacaoParaDeletar.idTransacao);
+
+            if (sucesso) {
+                // Recarregar lista de transações
+                const transacoesAtualizadas = await transactionService.getTransacoesByUser(usuario.idUsuario);
+                setTransacoes(transacoesAtualizadas);
+                setToast({ show: true, message: 'Transação excluída com sucesso!', type: 'success' });
+            } else {
+                setToast({ show: true, message: 'Erro ao excluir transação. Tente novamente.', type: 'error' });
+            }
+        } catch (error) {
+            console.error('Erro ao excluir transação:', error);
+            setToast({ show: true, message: 'Erro interno. Tente novamente.', type: 'error' });
+        } finally {
+            setShowDeleteConfirm(false);
+            setTransacaoParaDeletar(null);
+        }
+    };
+
+    // Logout com modal
+    const handleLogout = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = () => {
+        authService.logout();
+        window.location.href = '/home';
     };
 
     // Se não está autenticado, redireciona para login
@@ -312,12 +422,7 @@ const TransactionsPage: React.FC = () => {
                         </div>
 
                         <button
-                            onClick={() => {
-                                if (confirm('🚪 Tem certeza que deseja sair?')) {
-                                    authService.logout();
-                                    window.location.href = '/home';
-                                }
-                            }}
+                            onClick={handleLogout}
                             style={{
                                 background: '#ffffff',
                                 color: '#64748b',
@@ -626,9 +731,81 @@ const TransactionsPage: React.FC = () => {
                                     fontWeight: '700',
                                     color: transacao.tipoTransacao === 'CREDITO' ? '#10B981' : '#EF4444',
                                     textAlign: 'right',
-                                    minWidth: '140px'
+                                    minWidth: '140px',
+                                    marginRight: '16px'
                                 }}>
                                     {transacao.tipoTransacao === 'CREDITO' ? '+' : '-'}{transactionService.formatCurrency(transacao.valor)}
+                                </div>
+
+                                {/* Ações */}
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '8px',
+                                    alignItems: 'center'
+                                }}>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleEditTransaction(transacao);
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: '1px solid #e2e8f0',
+                                            borderRadius: '6px',
+                                            padding: '8px',
+                                            cursor: 'pointer',
+                                            color: '#64748b',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#eff6ff';
+                                            e.currentTarget.style.color = '#2563eb';
+                                            e.currentTarget.style.borderColor = '#93c5fd';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = 'none';
+                                            e.currentTarget.style.color = '#64748b';
+                                            e.currentTarget.style.borderColor = '#e2e8f0';
+                                        }}
+                                        title="Editar transação"
+                                    >
+                                        ✏️
+                                    </button>
+
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteTransaction(transacao);
+                                        }}
+                                        style={{
+                                            background: 'none',
+                                            border: '1px solid #e2e8f0',
+                                            borderRadius: '6px',
+                                            padding: '8px',
+                                            cursor: 'pointer',
+                                            color: '#64748b',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            transition: 'all 0.2s'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = '#fef2f2';
+                                            e.currentTarget.style.color = '#dc2626';
+                                            e.currentTarget.style.borderColor = '#fecaca';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = 'none';
+                                            e.currentTarget.style.color = '#64748b';
+                                            e.currentTarget.style.borderColor = '#e2e8f0';
+                                        }}
+                                        title="Excluir transação"
+                                    >
+                                        🗑️
+                                    </button>
                                 </div>
                             </div>
                         ))
@@ -1011,6 +1188,353 @@ const TransactionsPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Modal Editar Transação */}
+            {showEditarTransacao && transacaoEditando && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '12px',
+                        padding: '32px',
+                        width: '100%',
+                        maxWidth: '500px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '24px'
+                        }}>
+                            <h2 style={{
+                                fontSize: '24px',
+                                fontWeight: '700',
+                                color: '#1F2937',
+                                margin: 0
+                            }}>
+                                ✏️ Editar Transação
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    setShowEditarTransacao(false);
+                                    setTransacaoEditando(null);
+                                    setFormData({
+                                        tipo: 'CREDITO',
+                                        categoria: '',
+                                        descricao: '',
+                                        valor: '',
+                                        data: new Date().toISOString().split('T')[0]
+                                    });
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: 'pointer',
+                                    color: '#6B7280',
+                                    padding: '4px'
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Formulário Editar Transação */}
+                        <form onSubmit={handleSubmitEditTransaction}>
+                            {/* Tipo de Transação - SOMENTE VISUALIZAÇÃO (não editável) */}
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Tipo de Transação (não editável)
+                                </label>
+                                <div style={{
+                                    padding: '12px',
+                                    border: '1px solid #E5E7EB',
+                                    background: '#F9FAFB',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: formData.tipo === 'CREDITO' ? '#10B981' : '#EF4444',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}>
+                                    {formData.tipo === 'CREDITO' ? '📈 Receita' : '📉 Despesa'}
+                                </div>
+                                <div style={{
+                                    fontSize: '12px',
+                                    color: '#6B7280',
+                                    marginTop: '4px'
+                                }}>
+                                    ⚠️ O tipo da transação não pode ser alterado
+                                </div>
+                            </div>
+
+                            {/* Categoria */}
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Categoria *
+                                </label>
+                                <select
+                                    name="categoria"
+                                    value={formData.categoria}
+                                    onChange={handleInputChange}
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #E5E7EB',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        background: '#ffffff',
+                                        color: '#1F2937'
+                                    }}
+                                >
+                                    <option value="">Selecionar categoria</option>
+                                    {formData.tipo === 'CREDITO' ? (
+                                        <>
+                                            <option value="Salário">💼 Salário</option>
+                                            <option value="Freelance">💻 Freelance</option>
+                                            <option value="Investimentos">📈 Rendimentos</option>
+                                            <option value="Vendas">🛒 Vendas</option>
+                                            <option value="Outros">📋 Outros</option>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <option value="Alimentação">🍔 Alimentação</option>
+                                            <option value="Transporte">🚗 Transporte</option>
+                                            <option value="Moradia">🏠 Moradia</option>
+                                            <option value="Lazer">🎮 Lazer</option>
+                                            <option value="Saúde">🏥 Saúde</option>
+                                            <option value="Educação">📚 Educação</option>
+                                            <option value="Outros">📋 Outros</option>
+                                        </>
+                                    )}
+                                </select>
+                            </div>
+
+                            {/* Descrição */}
+                            <div style={{ marginBottom: '20px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Descrição *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="descricao"
+                                    value={formData.descricao}
+                                    onChange={handleInputChange}
+                                    placeholder="Ex: Compra no supermercado, Pagamento freelance..."
+                                    required
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #E5E7EB',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        background: '#ffffff',
+                                        color: '#1F2937',
+                                        boxSizing: 'border-box'
+                                    }}
+                                />
+                            </div>
+
+                            {/* Valor e Data */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#374151'
+                                    }}>
+                                        Valor (R$) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="valor"
+                                        value={formData.valor}
+                                        onChange={handleInputChange}
+                                        placeholder="0,00"
+                                        step="0.01"
+                                        min="0"
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            border: '1px solid #E5E7EB',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: '#ffffff',
+                                            color: '#1F2937',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#374151'
+                                    }}>
+                                        Data *
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="data"
+                                        value={formData.data}
+                                        onChange={handleInputChange}
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            border: '1px solid #E5E7EB',
+                                            borderRadius: '8px',
+                                            fontSize: '14px',
+                                            background: '#ffffff',
+                                            color: '#1F2937',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Botões */}
+                            <div style={{ display: 'flex', gap: '12px' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowEditarTransacao(false);
+                                        setTransacaoEditando(null);
+                                        setFormData({
+                                            tipo: 'CREDITO',
+                                            categoria: '',
+                                            descricao: '',
+                                            valor: '',
+                                            data: new Date().toISOString().split('T')[0]
+                                        });
+                                    }}
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px 24px',
+                                        border: '1px solid #E5E7EB',
+                                        background: '#ffffff',
+                                        color: '#6B7280',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={saving}
+                                    style={{
+                                        flex: 1,
+                                        padding: '12px 24px',
+                                        border: 'none',
+                                        background: saving ? '#9CA3AF' : '#2563EB',
+                                        color: 'white',
+                                        borderRadius: '8px',
+                                        cursor: saving ? 'not-allowed' : 'pointer',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        transition: 'all 0.2s',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: '8px'
+                                    }}
+                                >
+                                    {saving ? (
+                                        <>
+                                            <div style={{
+                                                width: '16px',
+                                                height: '16px',
+                                                border: '2px solid rgba(255,255,255,0.3)',
+                                                borderTop: '2px solid white',
+                                                borderRadius: '50%',
+                                                animation: 'spin 1s linear infinite'
+                                            }}></div>
+                                            Salvando...
+                                        </>
+                                    ) : (
+                                        '✏️ Salvar Alterações'
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Confirmação de Exclusão */}
+            <ConfirmDialog
+                isOpen={showDeleteConfirm}
+                title="Excluir Transação"
+                message={`Tem certeza que deseja excluir a transação "${transacaoParaDeletar?.descricao}" no valor de ${transacaoParaDeletar ? transactionService.formatCurrency(transacaoParaDeletar.valor) : 'R$ 0,00'}? Esta ação não pode ser desfeita.`}
+                confirmText="Sim, Excluir"
+                cancelText="Cancelar"
+                type="danger"
+                onConfirm={confirmDeleteTransaction}
+                onCancel={() => {
+                    setShowDeleteConfirm(false);
+                    setTransacaoParaDeletar(null);
+                }}
+            />
+
+            {/* Modal de Confirmação de Logout */}
+            <ConfirmDialog
+                isOpen={showLogoutConfirm}
+                title="Sair do Sistema"
+                message="Tem certeza que deseja encerrar sua sessão? Você precisará fazer login novamente para acessar o sistema."
+                confirmText="Sim, Sair"
+                cancelText="Cancelar"
+                type="warning"
+                onConfirm={confirmLogout}
+                onCancel={() => setShowLogoutConfirm(false)}
+            />
+
+            {/* Toast para Notificações */}
+            <Toast
+                isOpen={toast.show}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast({ ...toast, show: false })}
+            />
         </div>
     );
 };

@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { authService } from '../../services/authService';
 import { Meta, goalService } from '../../services/goalService';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
+import Toast from '../../components/common/Toast';
 
 const GoalsPage: React.FC = () => {
     const usuario = authService.getCurrentUser();
     const [metas, setMetas] = useState<Meta[]>([]);
     const [loading, setLoading] = useState(true);
     const [showNovaMeta, setShowNovaMeta] = useState(false);
+    const [showEditarMeta, setShowEditarMeta] = useState(false);
     const [showContribuicao, setShowContribuicao] = useState(false);
     const [metaSelecionada, setMetaSelecionada] = useState<Meta | null>(null);
+    const [metaEditando, setMetaEditando] = useState<Meta | null>(null);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [metaParaDeletar, setMetaParaDeletar] = useState<Meta | null>(null);
+    const [toast, setToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     // Estado do formulário de nova meta
     const [formData, setFormData] = useState({
@@ -173,6 +181,108 @@ const GoalsPage: React.FC = () => {
         setValorContribuicao('');
     };
 
+    // Editar meta
+    const handleEditGoal = (meta: Meta) => {
+        setMetaEditando(meta);
+        setFormData({
+            nome: meta.nome,
+            descricao: meta.descricao || '',
+            categoria: meta.categoria,
+            valorNecessario: meta.valorNecessario.toString(),
+            dataLimite: meta.dataLimite || ''
+        });
+        setShowEditarMeta(true);
+    };
+
+    const handleSubmitEditGoal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!usuario?.idUsuario || !metaEditando) return;
+
+        if (!formData.nome || !formData.valorNecessario) {
+            setToast({show: true, message: 'Por favor, preencha todos os campos obrigatórios!', type: 'error'});
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const metaAtualizada = {
+                ...metaEditando,
+                nome: formData.nome,
+                descricao: formData.descricao,
+                categoria: formData.categoria,
+                valorNecessario: parseFloat(formData.valorNecessario),
+                dataLimite: formData.dataLimite || null
+            };
+
+            const resultado = await goalService.updateGoal(metaAtualizada);
+
+            if (resultado) {
+                // Recarregar lista de metas
+                const metasAtualizadas = await goalService.getGoalsByUser(usuario.idUsuario);
+                setMetas(metasAtualizadas);
+
+                // Fechar modal e resetar
+                setShowEditarMeta(false);
+                setMetaEditando(null);
+                setFormData({
+                    nome: '',
+                    descricao: '',
+                    categoria: 'OUTROS',
+                    valorNecessario: '',
+                    dataLimite: ''
+                });
+
+                setToast({show: true, message: 'Meta atualizada com sucesso!', type: 'success'});
+            } else {
+                setToast({show: true, message: 'Erro ao atualizar meta. Tente novamente.', type: 'error'});
+            }
+        } catch (error) {
+            console.error('Erro ao atualizar meta:', error);
+            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Deletar meta
+    const handleDeleteGoal = (meta: Meta) => {
+        setMetaParaDeletar(meta);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDeleteGoal = async () => {
+        if (!metaParaDeletar?.idMeta || !usuario?.idUsuario) return;
+
+        try {
+            const sucesso = await goalService.deleteGoal(metaParaDeletar.idMeta);
+            
+            if (sucesso) {
+                // Recarregar lista de metas
+                const metasAtualizadas = await goalService.getGoalsByUser(usuario.idUsuario);
+                setMetas(metasAtualizadas);
+                setToast({show: true, message: 'Meta excluída com sucesso!', type: 'success'});
+            } else {
+                setToast({show: true, message: 'Erro ao excluir meta. Tente novamente.', type: 'error'});
+            }
+        } catch (error) {
+            console.error('Erro ao excluir meta:', error);
+            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
+        } finally {
+            setShowDeleteConfirm(false);
+            setMetaParaDeletar(null);
+        }
+    };
+
+    // Logout com modal
+    const handleLogout = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = () => {
+        authService.logout();
+        window.location.href = '/home';
+    };
+
     return (
         <div style={{
             minHeight: '100vh',
@@ -303,10 +413,7 @@ const GoalsPage: React.FC = () => {
                         </div>
 
                         <button
-                            onClick={() => {
-                                authService.logout();
-                                window.location.href = '/login';
-                            }}
+                            onClick={handleLogout}
                             style={{
                                 background: '#ffffff',
                                 color: '#64748b',
@@ -565,10 +672,22 @@ const GoalsPage: React.FC = () => {
                                         onMouseEnter={(e) => {
                                             e.currentTarget.style.borderColor = '#c7d2fe';
                                             e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.05)';
+                                            
+                                            // Mostrar botões de ação
+                                            const actionsDiv = e.currentTarget.querySelector('.meta-actions') as HTMLElement;
+                                            if (actionsDiv) {
+                                                actionsDiv.style.opacity = '1';
+                                            }
                                         }}
                                         onMouseLeave={(e) => {
                                             e.currentTarget.style.borderColor = '#e2e8f0';
                                             e.currentTarget.style.boxShadow = 'none';
+                                            
+                                            // Esconder botões de ação
+                                            const actionsDiv = e.currentTarget.querySelector('.meta-actions') as HTMLElement;
+                                            if (actionsDiv) {
+                                                actionsDiv.style.opacity = '0';
+                                            }
                                         }}
                                     >
                                         {/* Header da Meta */}
@@ -735,6 +854,83 @@ const GoalsPage: React.FC = () => {
                                                     </div>
                                                 )}
                                             </div>
+                                        </div>
+
+                                        {/* Ações da Meta */}
+                                        <div className="meta-actions" style={{
+                                            position: 'absolute',
+                                            top: '16px',
+                                            right: '16px',
+                                            display: 'flex',
+                                            gap: '8px',
+                                            opacity: 0,
+                                            transition: 'opacity 0.2s'
+                                        }}>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleEditGoal(meta);
+                                                }}
+                                                style={{
+                                                    background: 'rgba(255, 255, 255, 0.9)',
+                                                    border: '1px solid #e2e8f0',
+                                                    borderRadius: '6px',
+                                                    padding: '8px',
+                                                    cursor: 'pointer',
+                                                    color: '#64748b',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    transition: 'all 0.2s',
+                                                    backdropFilter: 'blur(4px)'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(59, 130, 246, 0.1)';
+                                                    e.currentTarget.style.color = '#2563eb';
+                                                    e.currentTarget.style.borderColor = '#93c5fd';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                                    e.currentTarget.style.color = '#64748b';
+                                                    e.currentTarget.style.borderColor = '#e2e8f0';
+                                                }}
+                                                title="Editar meta"
+                                            >
+                                                ✏️
+                                            </button>
+
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteGoal(meta);
+                                                }}
+                                                style={{
+                                                    background: 'rgba(255, 255, 255, 0.9)',
+                                                    border: '1px solid #e2e8f0',
+                                                    borderRadius: '6px',
+                                                    padding: '8px',
+                                                    cursor: 'pointer',
+                                                    color: '#64748b',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    transition: 'all 0.2s',
+                                                    backdropFilter: 'blur(4px)'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                                                    e.currentTarget.style.color = '#dc2626';
+                                                    e.currentTarget.style.borderColor = '#fecaca';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
+                                                    e.currentTarget.style.color = '#64748b';
+                                                    e.currentTarget.style.borderColor = '#e2e8f0';
+                                                }}
+                                                title="Excluir meta"
+                                            >
+                                                🗑️
+                                            </button>
                                         </div>
                                     </div>
                                 );
@@ -1221,6 +1417,316 @@ const GoalsPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Modal Editar Meta */}
+            {showEditarMeta && metaEditando && (
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 1000
+                }}>
+                    <div style={{
+                        background: '#ffffff',
+                        borderRadius: '16px',
+                        padding: '32px',
+                        width: '90%',
+                        maxWidth: '500px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                        maxHeight: '90vh',
+                        overflowY: 'auto'
+                    }}>
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            marginBottom: '24px'
+                        }}>
+                            <h2 style={{
+                                fontSize: '24px',
+                                fontWeight: '700',
+                                color: '#1F2937',
+                                margin: 0
+                            }}>
+                                ✏️ Editar Meta
+                            </h2>
+                            <button
+                                onClick={() => {
+                                    setShowEditarMeta(false);
+                                    setMetaEditando(null);
+                                    setFormData({
+                                        nome: '',
+                                        descricao: '',
+                                        categoria: 'OUTROS',
+                                        valorNecessario: '',
+                                        dataLimite: ''
+                                    });
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    fontSize: '24px',
+                                    cursor: 'pointer',
+                                    color: '#6B7280',
+                                    padding: '4px'
+                                }}
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Formulário Editar Meta */}
+                        <form onSubmit={handleSubmitEditGoal}>
+                            {/* Nome da Meta */}
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Nome da Meta *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="nome"
+                                    value={formData.nome}
+                                    onChange={handleInputChange}
+                                    placeholder="Ex: Casa própria, Viagem, Emergência..."
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        fontSize: '16px'
+                                    }}
+                                    required
+                                />
+                            </div>
+
+                            {/* Descrição */}
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Descrição (opcional)
+                                </label>
+                                <textarea
+                                    name="descricao"
+                                    value={formData.descricao}
+                                    onChange={handleInputChange}
+                                    placeholder="Descreva sua meta..."
+                                    rows={3}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        fontSize: '16px',
+                                        resize: 'vertical'
+                                    }}
+                                />
+                            </div>
+
+                            {/* Categoria */}
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Categoria *
+                                </label>
+                                <select
+                                    name="categoria"
+                                    value={formData.categoria}
+                                    onChange={handleInputChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        fontSize: '16px',
+                                        background: '#ffffff',
+                                        cursor: 'pointer'
+                                    }}
+                                    required
+                                >
+                                    <option value="EMERGENCIA">🚨 Reserva de Emergência</option>
+                                    <option value="CASA">🏠 Casa Própria</option>
+                                    <option value="INVESTIMENTO">📈 Investimento</option>
+                                    <option value="VIAGEM">✈️ Viagem</option>
+                                    <option value="EDUCACAO">📚 Educação</option>
+                                    <option value="ELETRONICOS">📱 Eletrônicos</option>
+                                    <option value="APOSENTADORIA">👴 Aposentadoria</option>
+                                    <option value="OUTROS">🎯 Outros</option>
+                                </select>
+                            </div>
+
+                            {/* Valor Necessário */}
+                            <div style={{ marginBottom: '24px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Valor da Meta *
+                                </label>
+                                <input
+                                    type="number"
+                                    name="valorNecessario"
+                                    value={formData.valorNecessario}
+                                    onChange={handleInputChange}
+                                    placeholder="0.00"
+                                    min="0.01"
+                                    step="0.01"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        fontSize: '16px'
+                                    }}
+                                    required
+                                />
+                            </div>
+
+                            {/* Data Limite (opcional) */}
+                            <div style={{ marginBottom: '32px' }}>
+                                <label style={{
+                                    display: 'block',
+                                    marginBottom: '8px',
+                                    fontSize: '14px',
+                                    fontWeight: '600',
+                                    color: '#374151'
+                                }}>
+                                    Data Limite (opcional)
+                                </label>
+                                <input
+                                    type="date"
+                                    name="dataLimite"
+                                    value={formData.dataLimite}
+                                    onChange={handleInputChange}
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        border: '1px solid #D1D5DB',
+                                        borderRadius: '8px',
+                                        fontSize: '16px'
+                                    }}
+                                />
+                                <div style={{
+                                    fontSize: '12px',
+                                    color: '#6b7280',
+                                    marginTop: '4px'
+                                }}>
+                                    Deixe em branco para metas sem prazo
+                                </div>
+                            </div>
+
+                            {/* Botões */}
+                            <div style={{
+                                display: 'flex',
+                                gap: '16px',
+                                justifyContent: 'flex-end'
+                            }}>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowEditarMeta(false);
+                                        setMetaEditando(null);
+                                        setFormData({
+                                            nome: '',
+                                            descricao: '',
+                                            categoria: 'OUTROS',
+                                            valorNecessario: '',
+                                            dataLimite: ''
+                                        });
+                                    }}
+                                    style={{
+                                        background: '#F3F4F6',
+                                        color: '#6B7280',
+                                        border: 'none',
+                                        padding: '12px 24px',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={saving}
+                                    style={{
+                                        background: saving ? '#D1D5DB' : 'linear-gradient(135deg, #2563EB 0%, #1E40AF 100%)',
+                                        color: 'white',
+                                        border: 'none',
+                                        padding: '12px 24px',
+                                        borderRadius: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        cursor: saving ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    {saving ? '⏳ Salvando...' : '✏️ Salvar Alterações'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Confirmação de Exclusão */}
+            <ConfirmDialog
+                isOpen={showDeleteConfirm}
+                title="Excluir Meta"
+                message={`Tem certeza que deseja excluir a meta "${metaParaDeletar?.nome}" no valor de ${metaParaDeletar ? goalService.formatCurrency(metaParaDeletar.valorNecessario) : 'R$ 0,00'}? Esta ação não pode ser desfeita.`}
+                confirmText="Sim, Excluir"
+                cancelText="Cancelar"
+                type="danger"
+                onConfirm={confirmDeleteGoal}
+                onCancel={() => {
+                    setShowDeleteConfirm(false);
+                    setMetaParaDeletar(null);
+                }}
+            />
+
+            {/* Modal de Confirmação de Logout */}
+            <ConfirmDialog
+                isOpen={showLogoutConfirm}
+                title="Sair do Sistema"
+                message="Tem certeza que deseja encerrar sua sessão? Você precisará fazer login novamente para acessar o sistema."
+                confirmText="Sim, Sair"
+                cancelText="Cancelar"
+                type="warning"
+                onConfirm={confirmLogout}
+                onCancel={() => setShowLogoutConfirm(false)}
+            />
+
+            {/* Toast para Notificações */}
+            <Toast
+                isOpen={toast.show}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast({...toast, show: false})}
+            />
 
             {/* CSS para animação de loading */}
             <style>{`

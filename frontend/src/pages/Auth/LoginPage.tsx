@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { authService } from '../../services/authService';
+import Toast from '../../components/common/Toast';
 
 const LoginPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'login' | 'cadastro'>('login');
@@ -12,6 +13,7 @@ const LoginPage: React.FC = () => {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [toast, setToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -22,7 +24,7 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
 
         if (!formData.email || !formData.senha) {
-            alert('❌ Por favor, preencha e-mail e senha!');
+            setToast({show: true, message: 'Por favor, preencha e-mail e senha!', type: 'error'});
             return;
         }
 
@@ -36,11 +38,11 @@ const LoginPage: React.FC = () => {
                 // Login bem-sucedido, redirecionar para dashboard
                 window.location.href = '/dashboard';
             } else {
-                alert(`❌ ${resultado.message}`);
+                setToast({show: true, message: resultado.message, type: 'error'});
             }
         } catch (error) {
             setIsLoading(false);
-            alert('❌ Erro interno. Tente novamente.');
+            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
             console.error('Erro no login:', error);
         }
     };
@@ -49,7 +51,7 @@ const LoginPage: React.FC = () => {
         e.preventDefault();
 
         if (!formData.nomeCompleto || !formData.email || !formData.dataNascimento || !formData.senha) {
-            alert('❌ Por favor, preencha todos os campos!');
+            setToast({show: true, message: 'Por favor, preencha todos os campos!', type: 'error'});
             return;
         }
 
@@ -80,11 +82,11 @@ const LoginPage: React.FC = () => {
                     }
                 }, 100);
             } else {
-                alert(`❌ ${resultado.message}`);
+                setToast({show: true, message: resultado.message, type: 'error'});
             }
         } catch (error) {
             setIsLoading(false);
-            alert('❌ Erro interno. Tente novamente.');
+            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
             console.error('Erro no cadastro:', error);
         }
     };
@@ -682,6 +684,14 @@ const LoginPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Toast para Notificações */}
+            <Toast
+                isOpen={toast.show}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast({...toast, show: false})}
+            />
         </div>
     );
 };

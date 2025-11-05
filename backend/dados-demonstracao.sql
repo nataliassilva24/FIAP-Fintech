@@ -1,0 +1,127 @@
+-- ================================================================
+-- FIAP FINTECH - DADOS DE DEMONSTRAÇÃO PARA AVALIAÇÃO
+-- ================================================================
+-- Script SQL para criar usuário de teste com dados realistas
+-- Usuário: professor@fiap.edu.br | Senha: fiap2024
+
+-- 👨‍🏫 USUÁRIO PARA DEMONSTRAÇÃO FIAP
+INSERT INTO TB_USUARIO (ID_USUARIO, NOME_COMPLETO, EMAIL, SENHA, DATA_NASCIMENTO, GENERO, DATA_CADASTRO, ATIVO) 
+VALUES (SEQ_USUARIO.NEXTVAL, 'Professor FIAP Demonstração', 'professor@fiap.edu.br', 
+        'e4eb40ac65e5b16a00c7a0002e66e5d0bc51e3d4d13b4c1ba4b6a7b32f0e5c77', -- SHA256 de "fiap2024"
+        DATE '1985-03-15', 'MASCULINO', SYSDATE - 90, 'S');
+
+-- Recuperar ID do usuário criado
+DECLARE
+    v_id_usuario NUMBER;
+BEGIN
+    SELECT ID_USUARIO INTO v_id_usuario FROM TB_USUARIO WHERE EMAIL = 'professor@fiap.edu.br';
+    
+    -- ===============================
+    -- 💰 TRANSAÇÕES REALISTAS (3 MESES)
+    -- ===============================
+    
+    -- RECEITAS (Agosto 2024)
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Salário Agosto - Professor FIAP', 8500.00, DATE '2024-08-05');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Consultoria Técnica - Startup', 3200.00, DATE '2024-08-20');
+    
+    -- DESPESAS (Agosto 2024)
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Aluguel Apartamento', 2200.00, DATE '2024-08-01');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Supermercado - Compras mensais', 680.50, DATE '2024-08-08');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Combustível - Posto Shell', 420.00, DATE '2024-08-12');
+    
+    -- RECEITAS (Setembro 2024)  
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Salário Setembro - Professor FIAP', 8500.00, DATE '2024-09-05');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Freelance - Desenvolvimento Sistema', 2800.00, DATE '2024-09-15');
+    
+    -- DESPESAS (Setembro 2024)
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Aluguel Apartamento', 2200.00, DATE '2024-09-01');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Energia Elétrica - Enel', 185.40, DATE '2024-09-10');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Internet - Vivo Fibra 300MB', 129.90, DATE '2024-09-05');
+    
+    -- RECEITAS (Outubro 2024)
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Salário Outubro - Professor FIAP', 8500.00, DATE '2024-10-05');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'CREDITO', 'Aulas Particulares - Java/Spring', 1800.00, DATE '2024-10-18');
+    
+    -- DESPESAS (Outubro 2024)
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Supermercado - Compras outubro', 750.20, DATE '2024-10-03');
+    
+    INSERT INTO TB_TRANSACAO (ID_TRANSACAO, ID_USUARIO, TIPO_TRANSACAO, DESCRICAO, VALOR, DATA_TRANSACAO) 
+    VALUES (SEQ_TRANSACAO.NEXTVAL, v_id_usuario, 'DEBITO', 'Aluguel Apartamento', 2200.00, DATE '2024-10-01');
+    
+    -- ===============================
+    -- 📈 INVESTIMENTOS DIVERSIFICADOS
+    -- ===============================
+    
+    -- Portfólio conservador + arrojado
+    INSERT INTO TB_INVESTIMENTO (ID_INVESTIMENTO, ID_USUARIO, TIPO, VALOR_INVESTIDO, DATA_APLICACAO, DATA_RESGATE) 
+    VALUES (SEQ_INVESTIMENTO.NEXTVAL, v_id_usuario, 'CDB', 15000.00, DATE '2024-07-15', NULL);
+    
+    INSERT INTO TB_INVESTIMENTO (ID_INVESTIMENTO, ID_USUARIO, TIPO, VALOR_INVESTIDO, DATA_APLICACAO, DATA_RESGATE) 
+    VALUES (SEQ_INVESTIMENTO.NEXTVAL, v_id_usuario, 'TESOURO_SELIC', 25000.00, DATE '2024-08-01', NULL);
+    
+    INSERT INTO TB_INVESTIMENTO (ID_INVESTIMENTO, ID_USUARIO, TIPO, VALOR_INVESTIDO, DATA_APLICACAO, DATA_RESGATE) 
+    VALUES (SEQ_INVESTIMENTO.NEXTVAL, v_id_usuario, 'ACAO', 8000.00, DATE '2024-06-20', NULL);
+    
+    INSERT INTO TB_INVESTIMENTO (ID_INVESTIMENTO, ID_USUARIO, TIPO, VALOR_INVESTIDO, DATA_APLICACAO, DATA_RESGATE) 
+    VALUES (SEQ_INVESTIMENTO.NEXTVAL, v_id_usuario, 'FII', 12000.00, DATE '2024-09-10', NULL);
+    
+    INSERT INTO TB_INVESTIMENTO (ID_INVESTIMENTO, ID_USUARIO, TIPO, VALOR_INVESTIDO, DATA_APLICACAO, DATA_RESGATE) 
+    VALUES (SEQ_INVESTIMENTO.NEXTVAL, v_id_usuario, 'POUPANCA', 5000.00, DATE '2024-05-15', DATE '2024-09-20'); -- Já resgatado
+    
+    -- ===============================
+    -- 🎯 METAS FINANCEIRAS VARIADAS  
+    -- ===============================
+    
+    -- Meta 1: Viagem (40% concluída)
+    INSERT INTO TB_META_FINANCEIRA (ID_META, ID_USUARIO, NOME, DESCRICAO, CATEGORIA, VALOR_NECESSARIO, VALOR_ACUMULADO, DATA_LIMITE, STATUS, DATA_CRIACAO) 
+    VALUES (SEQ_META.NEXTVAL, v_id_usuario, 'Viagem Disney Família', 'Férias com esposa e 2 filhos - Orlando/Miami', 'VIAGEM', 18000.00, 7200.00, DATE '2025-07-15', 'ATIVA', DATE '2024-07-01');
+    
+    -- Meta 2: Casa (37% concluída)
+    INSERT INTO TB_META_FINANCEIRA (ID_META, ID_USUARIO, NOME, DESCRICAO, CATEGORIA, VALOR_NECESSARIO, VALOR_ACUMULADO, DATA_LIMITE, STATUS, DATA_CRIACAO) 
+    VALUES (SEQ_META.NEXTVAL, v_id_usuario, 'Entrada Casa Própria', 'Apartamento 3 quartos - Zona Sul SP', 'CASA', 120000.00, 45000.00, DATE '2026-12-01', 'ATIVA', DATE '2024-05-15');
+    
+    -- Meta 3: Emergência (95% concluída)
+    INSERT INTO TB_META_FINANCEIRA (ID_META, ID_USUARIO, NOME, DESCRICAO, CATEGORIA, VALOR_NECESSARIO, VALOR_ACUMULADO, DATA_LIMITE, STATUS, DATA_CRIACAO) 
+    VALUES (SEQ_META.NEXTVAL, v_id_usuario, 'Reserva de Emergência', '6 meses de despesas familiares', 'EMERGENCIA', 30000.00, 28500.00, DATE '2025-02-01', 'ATIVA', DATE '2024-06-01');
+    
+    -- Meta 4: Educação (100% concluída)
+    INSERT INTO TB_META_FINANCEIRA (ID_META, ID_USUARIO, NOME, DESCRICAO, CATEGORIA, VALOR_NECESSARIO, VALOR_ACUMULADO, DATA_LIMITE, STATUS, DATA_CRIACAO) 
+    VALUES (SEQ_META.NEXTVAL, v_id_usuario, 'MBA Gestão Financeira', 'Especialização FGV - Educação Continuada', 'EDUCACAO', 12000.00, 12000.00, DATE '2024-10-15', 'CONCLUIDA', DATE '2024-01-10');
+    
+    COMMIT;
+    
+    -- Exibir resumo dos dados inseridos
+    DBMS_OUTPUT.PUT_LINE('================================');
+    DBMS_OUTPUT.PUT_LINE('✅ DADOS DE DEMONSTRAÇÃO FIAP');
+    DBMS_OUTPUT.PUT_LINE('================================');
+    DBMS_OUTPUT.PUT_LINE('👨‍🏫 Nome: Professor FIAP Demonstração');
+    DBMS_OUTPUT.PUT_LINE('📧 Email: professor@fiap.edu.br');
+    DBMS_OUTPUT.PUT_LINE('🔑 Senha: fiap2024');
+    DBMS_OUTPUT.PUT_LINE('📊 15+ transações de 3 meses');
+    DBMS_OUTPUT.PUT_LINE('📈 5 investimentos (4 ativos + 1 resgatado)');
+    DBMS_OUTPUT.PUT_LINE('🎯 4 metas (3 ativas + 1 concluída)');
+    DBMS_OUTPUT.PUT_LINE('💰 Histórico financeiro completo');
+    DBMS_OUTPUT.PUT_LINE('================================');
+    
+END;
+/

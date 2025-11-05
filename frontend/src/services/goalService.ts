@@ -116,6 +116,56 @@ class GoalService {
         }
     }
 
+    // Atualizar meta existente
+    async updateGoal(meta: Meta): Promise<Meta | null> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/metas/${meta.idMeta}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    idUsuario: meta.idUsuario,
+                    nome: meta.nome,
+                    descricao: meta.descricao,
+                    categoria: meta.categoria,
+                    valorNecessario: meta.valorNecessario,
+                    dataLimite: meta.dataLimite || null
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Meta atualizada:', result);
+                return result;
+            } else {
+                throw new Error('Erro ao atualizar meta');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao atualizar meta:', error);
+            return null;
+        }
+    }
+
+    // Deletar meta
+    async deleteGoal(idMeta: number): Promise<boolean> {
+        try {
+            const response = await fetch(`${API_BASE_URL}/metas/${idMeta}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                console.log('✅ Meta deletada');
+                return true;
+            } else {
+                throw new Error('Erro ao deletar meta');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao deletar meta:', error);
+            return false;
+        }
+    }
+
     // Calcular resumo das metas
     calculateSummary(metas: Meta[]): GoalSummary {
         const totalMetas = metas.length;

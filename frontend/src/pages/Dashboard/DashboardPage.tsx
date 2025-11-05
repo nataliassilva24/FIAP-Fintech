@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { authService } from '../../services/authService';
 import { dashboardService, DashboardStats } from '../../services/dashboardService';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const DashboardPage: React.FC = () => {
     const usuario = authService.getCurrentUser();
     const [selectedPeriod, setSelectedPeriod] = useState('');
     const [dashboardData, setDashboardData] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
     // Função para obter o nome do período selecionado
     const getPeriodName = (period: string) => {
@@ -186,10 +188,12 @@ const DashboardPage: React.FC = () => {
     }
 
     const handleLogout = () => {
-        if (confirm('🚪 Tem certeza que deseja sair?')) {
-            authService.logout();
-            window.location.href = '/home';
-        }
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = () => {
+        authService.logout();
+        window.location.href = '/home';
     };
 
     return (
@@ -868,6 +872,18 @@ const DashboardPage: React.FC = () => {
 
 
             </main>
+
+            {/* Modal de Confirmação de Logout */}
+            <ConfirmDialog
+                isOpen={showLogoutConfirm}
+                title="Sair do Sistema"
+                message="Tem certeza que deseja encerrar sua sessão? Você precisará fazer login novamente para acessar o sistema."
+                confirmText="Sim, Sair"
+                cancelText="Cancelar"
+                type="warning"
+                onConfirm={confirmLogout}
+                onCancel={() => setShowLogoutConfirm(false)}
+            />
         </div>
     );
 };

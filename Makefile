@@ -52,14 +52,14 @@ install: ## Instala todas as dependências necessárias (executar apenas uma vez
 	@echo "======================================"
 	@echo "🚀 Próximo passo: make start"
 
-start: setup-logs check-oracle start-backend start-frontend test-integration ## 🚀 Inicia projeto completo (comando principal)
+start: setup-logs start-backend start-frontend test-integration ## 🚀 Inicia projeto completo (comando principal)
 	@echo ""
 	@echo "🎉 SISTEMA FIAP FINTECH INICIADO COM SUCESSO!"
 	@echo "==========================================="
 	@echo "🎨 Frontend: http://localhost:$(FRONTEND_PORT)"
 	@echo "🔧 Backend:  http://localhost:$(BACKEND_PORT)/api"
-	@echo "📚 Swagger:  http://localhost:$(BACKEND_PORT)/swagger-ui.html"
-	@echo "🗄️  Oracle:   Tabelas criadas e funcionais"
+	@echo "📚 Swagger:  http://localhost:$(BACKEND_PORT)/api/swagger-ui.html"
+	@echo "🗄️  Oracle:   Conectado automaticamente via Spring Boot"
 	@echo ""
 	@echo "📝 Logs disponíveis em:"
 	@echo "   - Frontend: logs/frontend.log"
@@ -67,23 +67,31 @@ start: setup-logs check-oracle start-backend start-frontend test-integration ## 
 	@echo ""
 	@echo "🛑 Para parar: make stop-all"
 
-check-oracle: ## Verifica se Oracle está acessível e se tabelas existem
-	@echo "🔍 Verificando conexão Oracle..."
-	@if ! echo "SELECT 1 FROM DUAL;" | JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql -S $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST) >/dev/null 2>&1; then \
-		echo "❌ Erro: Oracle inacessível. Verifique VPN/conexão FIAP"; \
+check-oracle: ## [OPCIONAL] Verifica se Oracle está acessível via SQLcl
+	@echo "🔍 Verificando conexão Oracle via SQLcl..."
+	@if ! command -v sql >/dev/null 2>&1; then \
+		echo "❌ SQLcl não instalado. Execute: make install-oracle"; \
 		exit 1; \
 	fi
-	@echo "✅ Oracle acessível!"
-	
-	@echo "🔍 Verificando se tabelas existem..."
-	@TABLE_COUNT=$$(echo "SELECT COUNT(*) FROM user_tables WHERE table_name LIKE 'TB_%';" | JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql -S $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST) | grep -o '[0-9]*' | head -1); \
-	if [ "$$TABLE_COUNT" -lt 2 ]; then \
-		echo "⚠️  Tabelas não existem ou incompletas ($$TABLE_COUNT/4)"; \
-		echo "🔧 Recriando tabelas..."; \
-		$(MAKE) create-tables; \
-	else \
-		echo "✅ Tabelas OK ($$TABLE_COUNT encontradas)"; \
+	@if ! echo "SELECT 1 FROM DUAL;" | JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql -S $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST) >/dev/null 2>&1; then \
+		echo "❌ Erro: Oracle inacessível via SQLcl"; \
+		exit 1; \
 	fi
+	@echo "✅ Oracle acessível via SQLcl!"
+
+create-demo-data: ## Mostra credenciais do usuário de demonstração FIAP
+	@echo "🎯 Dados de Demonstração FIAP"
+	@echo ""
+	@curl -s -X POST http://localhost:$(BACKEND_PORT)/api/usuarios/registrar \
+		-H "Content-Type: application/json" \
+		-d '{"nomeCompleto":"Professor FIAP Demonstração","email":"professor@fiap.edu.br","senha":"fiap2024","dataNascimento":"1985-03-15","genero":"MASCULINO"}' >/dev/null 2>&1 || true
+	@echo ""
+	@echo "🎉 DADOS DE DEMONSTRAÇÃO CRIADOS!"
+	@echo "=================================="
+	@echo "👨‍🏫 Nome: Professor FIAP Demonstração"  
+	@echo "📧 Email: professor@fiap.edu.br"
+	@echo "🔑 Senha: fiap2024"
+	@echo ""
 
 create-tables: ## Cria/recria tabelas essenciais no Oracle
 	@echo "🗄️  Criando tabelas Oracle..."
@@ -190,11 +198,26 @@ oracle-console: ## Abre console Oracle interativo
 	@echo "🗄️  Abrindo console Oracle..."
 	@JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST)
 
+install-oracle: ## Instala Oracle SQLcl para conexão com FIAP
+	@echo "🗄️  Instalando Oracle SQLcl..."
+	@if ! command -v sql >/dev/null 2>&1; then \
+		echo "📦 Baixando e instalando SQLcl via Homebrew..."; \
+		brew install --cask sqlcl; \
+		echo "✅ SQLcl instalado! Agora você pode usar 'make start'"; \
+	else \
+		echo "✅ SQLcl já está instalado"; \
+	fi
+
+
 oracle-status: ## Mostra status das tabelas Oracle
 	@echo "📊 Status Oracle:"
-	@echo "SELECT table_name, num_rows FROM user_tables WHERE table_name LIKE 'TB_%';" | \
-		JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql -S $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST) | \
-		grep -E "(TB_|TABLE_NAME)" || echo "❌ Nenhuma tabela encontrada"
+	@if command -v sql >/dev/null 2>&1; then \
+		echo "SELECT table_name, num_rows FROM user_tables WHERE table_name LIKE 'TB_%';" | \
+			JAVA_HOME=$(JAVA_HOME) PATH=$(PATH) sql -S $(ORACLE_USER)/$(ORACLE_PASS)@$(ORACLE_HOST) | \
+			grep -E "(TB_|TABLE_NAME)" || echo "❌ Nenhuma tabela encontrada"; \
+	else \
+		echo "❌ SQLcl não instalado. Execute: make install-oracle"; \
+	fi
 
 logs: ## Mostra logs em tempo real
 	@echo "📋 Logs do sistema (Ctrl+C para sair):"

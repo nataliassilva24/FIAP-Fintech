@@ -21,18 +21,17 @@ make start
 # ✅ Pronto! O sistema estará rodando:
 # 🎨 Frontend: http://localhost:3000
 # 🔧 Backend:  http://localhost:8080/api
-# 📚 Swagger:  http://localhost:8080/swagger-ui.html
+# 📚 Swagger:  http://localhost:8080/api/swagger-ui.html
 ```
 
-> **💡 Separamos em dois comandos:**
+> **💡 Dois comandos simples:**
 > 
 > **`make install`** (executar apenas uma vez):
-> - Instala Java, Maven, Oracle SQLcl (se necessário)
+> - Instala Java, Maven (se necessário)
 > - Instala dependências npm do frontend
 > 
 > **`make start`** (executar sempre que quiser iniciar):
-> - Verifica conexão Oracle FIAP 
-> - **Cria/verifica tabelas automaticamente** (soluciona problema de instâncias Oracle que eliminam tabelas)
+> - **Oracle conecta automaticamente** via Spring Boot
 > - Inicia backend e frontend
 > - Testa integração completa
 
@@ -62,6 +61,18 @@ make oracle-status
 
 ## 🎯 **Como Usar o Sistema**
 
+### **📋 Opção 1: Usuário de Demonstração (Recomendado para Avaliação)**
+```bash
+# Depois do make start, em outro terminal:
+make create-demo-data
+```
+
+**🔑 Credenciais de Teste:**
+- **Email:** `professor@fiap.edu.br`
+- **Senha:** `fiap2024`  
+- **Dados:** Transações + Investimentos + Metas pré-criados
+
+### **📋 Opção 2: Criar Conta Nova**
 1. **Acesse:** http://localhost:3000
 2. **Clique** em "→ Iniciar sessão" no canto superior direito
 3. **Cadastre-se** na aba "CADASTRAR" 
