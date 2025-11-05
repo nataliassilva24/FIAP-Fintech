@@ -111,16 +111,3 @@ frontend/
 - **CSS-in-JS** para estilização
 
 ---
-
-## 📱 **Páginas do Sistema**
-
-| Página | URL | Funcionalidade | Status |
-|--------|-----|----------------|--------|
-| **Homepage** | `/` | Apresentação do sistema | ✅ |
-| **Login** | `/login` | Autenticação + Cadastro | ✅ |
-| **Dashboard** | `/dashboard` | Visão geral financeira | ✅ |
-| **Transações** | `/transacoes` | CRUD transações | ✅ |
-| **Investimentos** | `/investimentos` | CRUD investimentos | ✅ |
-| **Metas** | `/metas` | CRUD metas + contribuições | ✅ |
-
----
