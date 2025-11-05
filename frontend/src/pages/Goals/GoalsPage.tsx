@@ -645,9 +645,10 @@ const GoalsPage: React.FC = () => {
                                                 <div style={{
                                                     width: `${Math.min(meta.percentualAlcancado, 100)}%`,
                                                     height: '100%',
-                                                    background: `linear-gradient(90deg, ${progressColor}, ${progressColor}dd)`,
+                                                    background: 'linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%)',
                                                     borderRadius: '4px',
-                                                    transition: 'width 0.3s ease'
+                                                    transition: 'width 0.3s ease',
+                                                    boxShadow: '0 2px 4px rgba(16, 185, 129, 0.3)'
                                                 }}></div>
                                             </div>
                                         </div>
@@ -1085,9 +1086,10 @@ const GoalsPage: React.FC = () => {
                                 <div style={{
                                     width: `${Math.min(metaSelecionada.percentualAlcancado, 100)}%`,
                                     height: '100%',
-                                    background: goalService.getProgressColor(metaSelecionada.percentualAlcancado, metaSelecionada.vencida),
+                                    background: 'linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%)',
                                     borderRadius: '3px',
-                                    transition: 'width 0.3s ease'
+                                    transition: 'width 0.3s ease',
+                                    boxShadow: '0 1px 3px rgba(16, 185, 129, 0.2)'
                                 }}></div>
                             </div>
                             
