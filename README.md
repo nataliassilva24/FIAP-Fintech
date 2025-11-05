@@ -35,30 +35,6 @@ make start
 > - Inicia backend e frontend
 > - Testa integração completa
 
-### **🔧 Comandos Úteis**
-
-```bash
-# Ver todos os comandos disponíveis
-make help
-
-# Instalar dependências (uma vez só)
-make install
-
-# Iniciar projeto completo
-make start
-
-# Parar serviços
-make stop-all
-
-# Ver logs em tempo real
-make logs
-
-# Status das tabelas Oracle
-make oracle-status
-```
-
----
-
 ## 🎯 **Como Usar o Sistema**
 
 ### **🚀 Passo 1: Iniciar Projeto**
@@ -69,13 +45,13 @@ make start    # Iniciar sistema completo
 
 ### **👤 Passo 2: Escolher Forma de Acesso**
 
-#### **📋 Opção A: Dados de Demonstração (Recomendado para Professores)**
+#### **📋 Opção A: Dados de Demonstração**
 ```bash
 # Em outro terminal, obter credenciais de teste:
 make create-demo-data
 ```
 
-#### **📋 Opção B: Criar Seu Próprio Usuário**
+#### **📋 Opção B: Criar Seu Próprio Usuário, depois de iniciar o projeto**
 1. **Acesse:** http://localhost:3000
 2. **Clique:** "→ Iniciar sessão"
 3. **Aba:** "CADASTRAR"
