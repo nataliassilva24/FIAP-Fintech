@@ -3,6 +3,7 @@ import { authService } from '../../services/authService';
 import { Meta, goalService } from '../../services/goalService';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Toast from '../../components/common/Toast';
+import UserDropdown from '../../components/common/UserDropdown';
 
 const GoalsPage: React.FC = () => {
     const usuario = authService.getCurrentUser();
@@ -351,8 +352,7 @@ const GoalsPage: React.FC = () => {
                             { name: 'Dashboard', path: '/dashboard' },
                             { name: 'Transações', path: '/transacoes' },
                             { name: 'Investimentos', path: '/investimentos' },
-                            { name: 'Metas', path: '/metas' },
-                            { name: 'Perfil', path: '/perfil' }
+                            { name: 'Metas', path: '/metas' }
                         ].map((item, index) => (
                             <button
                                 key={index}
@@ -379,67 +379,8 @@ const GoalsPage: React.FC = () => {
                         ))}
                     </nav>
 
-                    {/* User Menu */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            padding: '8px 16px',
-                            background: '#f1f5f9',
-                            borderRadius: '24px'
-                        }}>
-                            <div style={{
-                                width: '36px',
-                                height: '36px',
-                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontSize: '14px',
-                                fontWeight: '600'
-                            }}>
-                                {usuario.nomeCompleto.split(' ').map(name => name[0]).join('').substring(0, 2)}
-                            </div>
-                            <div>
-                                <div style={{ color: '#1e293b', fontSize: '14px', fontWeight: '600' }}>
-                                    {usuario.nomeCompleto.split(' ')[0]}
-                                </div>
-                                <div style={{ color: '#64748b', fontSize: '12px' }}>
-                                    {usuario.email}
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                background: '#ffffff',
-                                color: '#64748b',
-                                border: '1px solid #e2e8f0',
-                                padding: '8px 12px',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                cursor: 'pointer',
-                                fontWeight: '500',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#fee2e2';
-                                (e.target as HTMLButtonElement).style.color = '#dc2626';
-                                (e.target as HTMLButtonElement).style.borderColor = '#fecaca';
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#ffffff';
-                                (e.target as HTMLButtonElement).style.color = '#64748b';
-                                (e.target as HTMLButtonElement).style.borderColor = '#e2e8f0';
-                            }}
-                        >
-                            Sair
-                        </button>
-                    </div>
+                    {/* User Dropdown */}
+                    <UserDropdown onLogout={handleLogout} />
                 </div>
             </header>
 

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { authService } from '../../services/authService';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Toast from '../../components/common/Toast';
+import UserDropdown from '../../components/common/UserDropdown';
+import { authService } from '../../services/authService';
 
 const ProfilePage: React.FC = () => {
     const usuario = authService.getCurrentUser();
     const [isEditing, setIsEditing] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [toast, setToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
+    const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
     const [saving, setSaving] = useState(false);
 
     // Estado do formulário de edição
@@ -28,7 +29,7 @@ const ProfilePage: React.FC = () => {
         if (!usuario?.idUsuario) return;
 
         if (!formData.nomeCompleto || !formData.email || !formData.dataNascimento) {
-            setToast({show: true, message: 'Por favor, preencha todos os campos obrigatórios!', type: 'error'});
+            setToast({ show: true, message: 'Por favor, preencha todos os campos obrigatórios!', type: 'error' });
             return;
         }
 
@@ -36,12 +37,12 @@ const ProfilePage: React.FC = () => {
         try {
             // Simular chamada para API de atualização de usuário
             await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            setToast({show: true, message: 'Perfil atualizado com sucesso!', type: 'success'});
+
+            setToast({ show: true, message: 'Perfil atualizado com sucesso!', type: 'success' });
             setIsEditing(false);
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
-            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
+            setToast({ show: true, message: 'Erro interno. Tente novamente.', type: 'error' });
         } finally {
             setSaving(false);
         }
@@ -234,32 +235,8 @@ const ProfilePage: React.FC = () => {
                             </div>
                         </div>
 
-                        <button
-                            onClick={handleLogout}
-                            style={{
-                                background: '#ffffff',
-                                color: '#64748b',
-                                border: '1px solid #e2e8f0',
-                                padding: '8px 12px',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                cursor: 'pointer',
-                                fontWeight: '500',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#fee2e2';
-                                (e.target as HTMLButtonElement).style.color = '#dc2626';
-                                (e.target as HTMLButtonElement).style.borderColor = '#fecaca';
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#ffffff';
-                                (e.target as HTMLButtonElement).style.color = '#64748b';
-                                (e.target as HTMLButtonElement).style.borderColor = '#e2e8f0';
-                            }}
-                        >
-                            Sair
-                        </button>
+                        {/* User Dropdown */}
+                        <UserDropdown onLogout={handleLogout} />
                     </div>
                 </div>
             </header>
@@ -692,7 +669,7 @@ const ProfilePage: React.FC = () => {
                                     </div>
                                     <div>
                                         <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Status da Conta:</span>
-                                        <div style={{ 
+                                        <div style={{
                                             display: 'inline-block',
                                             color: '#10b981',
                                             background: '#f0fdf4',
@@ -730,7 +707,7 @@ const ProfilePage: React.FC = () => {
                 isOpen={toast.show}
                 message={toast.message}
                 type={toast.type}
-                onClose={() => setToast({...toast, show: false})}
+                onClose={() => setToast({ ...toast, show: false })}
             />
 
             {/* CSS para animações */}

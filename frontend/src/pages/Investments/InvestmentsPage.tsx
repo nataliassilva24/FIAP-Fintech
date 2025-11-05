@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { authService } from '../../services/authService';
 import { Investimento, investmentService } from '../../services/investmentService';
+import UserDropdown from '../../components/common/UserDropdown';
+import ConfirmDialog from '../../components/common/ConfirmDialog';
 
 const InvestmentsPage: React.FC = () => {
     const usuario = authService.getCurrentUser();
@@ -16,7 +18,17 @@ const InvestmentsPage: React.FC = () => {
         dataAplicacao: new Date().toISOString().split('T')[0]
     });
     const [saving, setSaving] = useState(false);
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+    // Logout handler
+    const handleLogout = () => {
+        setShowLogoutConfirm(true);
+    };
+
+    const confirmLogout = () => {
+        authService.logout();
+        window.location.href = '/home';
+    };
 
     // Carregar investimentos reais do backend
     useEffect(() => {
@@ -196,8 +208,7 @@ const InvestmentsPage: React.FC = () => {
                             { name: 'Dashboard', path: '/dashboard' },
                             { name: 'Transações', path: '/transacoes' },
                             { name: 'Investimentos', path: '/investimentos' },
-                            { name: 'Metas', path: '/metas' },
-                            { name: 'Perfil', path: '/perfil' }
+                            { name: 'Metas', path: '/metas' }
                         ].map((item, index) => (
                             <button
                                 key={index}
@@ -258,36 +269,8 @@ const InvestmentsPage: React.FC = () => {
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => {
-                                authService.logout();
-                                window.location.href = '/login';
-                            }}
-                            style={{
-                                background: '#ffffff',
-                                color: '#64748b',
-                                border: '1px solid #e2e8f0',
-                                padding: '8px 12px',
-                                borderRadius: '8px',
-                                fontSize: '14px',
-                                cursor: 'pointer',
-                                fontWeight: '500',
-                                transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#fee2e2';
-                                (e.target as HTMLButtonElement).style.color = '#dc2626';
-                                (e.target as HTMLButtonElement).style.borderColor = '#fecaca';
-                            }}
-                            onMouseLeave={(e) => {
-                                (e.target as HTMLButtonElement).style.background = '#ffffff';
-                                (e.target as HTMLButtonElement).style.color = '#64748b';
-                                (e.target as HTMLButtonElement).style.borderColor = '#e2e8f0';
-                            }}
-                        >
-                            Sair
-                        </button>
-                    </div>
+                    {/* User Dropdown */}
+                    <UserDropdown onLogout={handleLogout} />
                 </div>
             </header>
 
