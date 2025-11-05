@@ -279,9 +279,9 @@ const GoalsPage: React.FC = () => {
                             borderRadius: '24px'
                         }}>
                             <div style={{
-                                width: '32px',
-                                height: '32px',
-                                background: '#1e40af',
+                                width: '36px',
+                                height: '36px',
+                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
