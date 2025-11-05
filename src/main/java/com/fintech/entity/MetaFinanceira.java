@@ -1,5 +1,6 @@
 package com.fintech.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fintech.enums.CategoriaMeta;
 import com.fintech.enums.StatusMeta;
 import jakarta.persistence.*;
@@ -63,7 +64,8 @@ public class MetaFinanceira {
     @Column(name = "STATUS", length = 15, nullable = false)
     private StatusMeta status;
 
-    // Referência para o usuário
+    // Referência para o usuário (ignorada na serialização JSON para evitar problemas com Hibernate proxy)
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_USUARIO", insertable = false, updatable = false)
     private Usuario usuario;

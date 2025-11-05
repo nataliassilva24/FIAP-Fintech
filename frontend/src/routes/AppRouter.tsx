@@ -7,7 +7,7 @@ import LoginPage from '../pages/Auth/LoginPage';
 import DashboardPage from '../pages/Dashboard/DashboardPage';
 import TransactionsPage from '../pages/Transactions/TransactionsPage';
 import InvestmentsPage from '../pages/Investments/InvestmentsPage';
-// import GoalsPage from '../pages/Goals/GoalsPage';
+import GoalsPage from '../pages/Goals/GoalsPage';
 
 // Error Page Component
 const ErrorPage: React.FC = () => (
@@ -98,8 +98,10 @@ const AppRouter: React.FC = () => {
                 {/* Real Investments page */}
                 <Route path="/investimentos" element={<InvestmentsPage />} />
                 
+                {/* Real Goals page */}
+                <Route path="/metas" element={<GoalsPage />} />
+                
                 {/* Placeholder pages (to be extracted) */}
-                <Route path="/metas" element={<PlaceholderPage pageName="Metas" />} />
                 <Route path="/cadastro" element={<PlaceholderPage pageName="Cadastro" />} />
                 
                 {/* 404 Error page */}
