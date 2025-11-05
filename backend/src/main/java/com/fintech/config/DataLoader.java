@@ -37,15 +37,17 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Verificar se já existem dados de usuários
-        if (usuarioRepository.count() > 0) {
-            return;
-        }
+        // Com dados reais já existentes no Oracle, DataLoader não é mais necessário
+        // Comentado para preservar como referência caso seja necessário resetar dados
         
-        carregarUsuarios();
-        carregarTransacoes();
-        carregarInvestimentos();
-        carregarMetas();
+        /* 
+        if (usuarioRepository.count() == 0) {
+            carregarUsuarios();
+            carregarTransacoes();
+            carregarInvestimentos();
+            carregarMetas();
+        }
+        */
     }
 
 

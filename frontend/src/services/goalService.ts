@@ -58,42 +58,7 @@ class GoalService {
 
         } catch (error) {
             console.error('❌ Erro ao buscar metas:', error);
-            
-            // Fallback: tentar buscar dados agregados
-            try {
-                console.log('🔄 Usando fallback com dados agregados...');
-                const response = await fetch(`${API_BASE_URL}/metas/usuario/${idUsuario}/estatisticas/ativas`);
-                const { metasAtivas } = await response.json();
-
-                // Simulação como fallback
-                const metasFallback: Meta[] = [];
-                
-                for (let i = 0; i < metasAtivas; i++) {
-                    metasFallback.push({
-                        idMeta: i + 1,
-                        idUsuario,
-                        nome: `Meta ${i + 1}`,
-                        descricao: 'Meta gerada automaticamente',
-                        categoria: 'OUTROS',
-                        valorNecessario: 10000,
-                        valorAcumulado: 7800,
-                        dataCriacao: new Date().toISOString().split('T')[0],
-                        status: 'ATIVA',
-                        percentualAlcancado: 78,
-                        valorRestante: 2200,
-                        diasRestantes: 90,
-                        vencida: false,
-                        concluida: false
-                    });
-                }
-
-                console.log(`📋 Usando ${metasFallback.length} metas de fallback`);
-                return metasFallback;
-                
-            } catch (fallbackError) {
-                console.error('❌ Erro no fallback:', fallbackError);
-                return [];
-            }
+            throw error; // Com dados reais, não precisamos mais de fallback
         }
     }
 

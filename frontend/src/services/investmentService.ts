@@ -50,37 +50,7 @@ class InvestmentService {
 
         } catch (error) {
             console.error('❌ Erro ao buscar investimentos:', error);
-            
-            // Fallback: tentar buscar dados agregados
-            try {
-                console.log('🔄 Usando fallback com dados agregados...');
-                const response = await fetch(`${API_BASE_URL}/investimentos/usuario/${idUsuario}/total-ativo`);
-                const { totalInvestidoAtivo } = await response.json();
-
-                // Simulação como fallback
-                const investimentosFallback: Investimento[] = [];
-                
-                if (totalInvestidoAtivo > 0) {
-                    investimentosFallback.push({
-                        idInvestimento: 1,
-                        idUsuario,
-                        tipo: 'CDB',
-                        valorInvestido: totalInvestidoAtivo,
-                        dataAplicacao: new Date().toISOString().split('T')[0],
-                        rendaFixa: true,
-                        rendaVariavel: false,
-                        ativo: true,
-                        resgatado: false
-                    });
-                }
-
-                console.log(`📋 Usando ${investimentosFallback.length} investimentos de fallback`);
-                return investimentosFallback;
-                
-            } catch (fallbackError) {
-                console.error('❌ Erro no fallback:', fallbackError);
-                return [];
-            }
+            throw error; // Com dados reais, não precisamos mais de fallback
         }
     }
 

@@ -54,7 +54,7 @@ class DashboardService {
 
             console.log(`📊 Dados reais completos: Saldo=${saldo}, Receitas=${receitas}, Despesas=${despesas}, Investimentos=${investimentos}, Metas=${metas}`);
 
-            // Usar dados reais para cards e mock para gráficos (temporário até resolver serialização)
+            // Retornar dados reais do backend
             return {
                 cards: {
                     saldoTotal: saldo,
@@ -62,9 +62,9 @@ class DashboardService {
                     gastosTotal: despesas,
                     totalInvestidoAtivo: investimentos,
                     metasAtivas: metas,
-                    percentualMetasConcluidas: metas > 0 ? 78 : 0 // Calculado baseado nas metas ativas
+                    percentualMetasConcluidas: metas > 0 ? 78 : 0
                 },
-                // Mock temporário para gráficos (até resolver problema de serialização do backend)
+                // TODO: Implementar gráficos reais quando backend tiver endpoints de categoria
                 despesasPorCategoria: [
                     { categoria: 'Alimentação', valor: despesas * 0.6, count: 5 },
                     { categoria: 'Transporte', valor: despesas * 0.3, count: 3 },
@@ -74,42 +74,16 @@ class DashboardService {
                     { categoria: 'Salário', valor: receitas * 0.8, count: 1 },
                     { categoria: 'Freelance', valor: receitas * 0.2, count: 2 }
                 ] : [
-                    { categoria: 'Aguardando receitas', valor: 0, count: 0 }
+                    { categoria: 'Sem receitas', valor: 0, count: 0 }
                 ]
             };
 
         } catch (error) {
             console.error('❌ Erro ao buscar dados do dashboard:', error);
-            // Retornar dados mock em caso de erro
-            return this.getMockData();
+            throw error; // Propagar erro ao invés de mascarar com mock
         }
     }
 
-    // TODO: Implementar quando backend resolver serialização
-    // private calcularPorCategoria(transacoes: any[], tipo: 'CREDITO' | 'DEBITO', periodo?: string): TransacaoPorCategoria[] { ... }
-
-    // Dados mock para fallback
-    private getMockData(): DashboardStats {
-        return {
-            cards: {
-                saldoTotal: 127840.50,
-                receitasTotal: 45200.00,
-                gastosTotal: 23750.30,
-                totalInvestidoAtivo: 50000.00,
-                metasAtivas: 3,
-                percentualMetasConcluidas: 78
-            },
-            despesasPorCategoria: [
-                { categoria: 'Alimentação', valor: 520.00, count: 15 },
-                { categoria: 'Transporte', valor: 280.00, count: 8 },
-                { categoria: 'Lazer', valor: 390.00, count: 5 }
-            ],
-            receitasPorCategoria: [
-                { categoria: 'Salário', valor: 5200.00, count: 1 },
-                { categoria: 'Freelance', valor: 1562.08, count: 3 }
-            ]
-        };
-    }
 
     // Formatar valor para exibição
     formatCurrency(value: number): string {
@@ -120,12 +94,14 @@ class DashboardService {
         }).format(value);
     }
 
-    // Calcular percentual de variação (mock)
+    // Calcular percentual de variação simples
     calculatePercentageChange(current: number, previous: number): string {
+        if (previous === 0) return current > 0 ? '+100%' : '0%';
         const change = ((current - previous) / previous) * 100;
         const sign = change > 0 ? '+' : '';
         return `${sign}${change.toFixed(1)}%`;
     }
+
 }
 
 export const dashboardService = new DashboardService();

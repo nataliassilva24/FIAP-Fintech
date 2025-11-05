@@ -40,52 +40,7 @@ class TransactionService {
 
         } catch (error) {
             console.error('❌ Erro ao buscar transações:', error);
-            
-            // Fallback: tentar buscar dados agregados como antes
-            try {
-                console.log('🔄 Usando fallback com dados agregados...');
-                const [receitasResponse, despesasResponse] = await Promise.all([
-                    fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/receitas`),
-                    fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/despesas`)
-                ]);
-
-                const receitasData = await receitasResponse.json();
-                const despesasData = await despesasResponse.json();
-
-                // Simulação como fallback
-                const transacoesFallback: Transacao[] = [];
-                
-                if (despesasData.totalDespesas > 0) {
-                    transacoesFallback.push({
-                        idTransacao: 1,
-                        idUsuario,
-                        tipoTransacao: 'DEBITO',
-                        categoria: 'Moradia',
-                        descricao: 'Total de despesas do período',
-                        valor: despesasData.totalDespesas,
-                        data: new Date().toISOString().split('T')[0]
-                    });
-                }
-
-                if (receitasData.totalReceitas > 0) {
-                    transacoesFallback.push({
-                        idTransacao: 2,
-                        idUsuario,
-                        tipoTransacao: 'CREDITO',
-                        categoria: 'Salário',
-                        descricao: 'Total de receitas do período',
-                        valor: receitasData.totalReceitas,
-                        data: new Date().toISOString().split('T')[0]
-                    });
-                }
-
-                console.log(`📋 Usando ${transacoesFallback.length} transações de fallback`);
-                return transacoesFallback;
-                
-            } catch (fallbackError) {
-                console.error('❌ Erro no fallback:', fallbackError);
-                return [];
-            }
+            throw error; // Com dados reais, não precisamos mais de fallback
         }
     }
 
