@@ -223,13 +223,20 @@ const InvestmentsPage: React.FC = () => {
                         ))}
                     </nav>
 
-                    {/* User Info e Logout */}
+                    {/* User Menu */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            padding: '8px 16px',
+                            background: '#f1f5f9',
+                            borderRadius: '24px'
+                        }}>
                             <div style={{
-                                width: '32px',
-                                height: '32px',
-                                background: '#1e40af',
+                                width: '36px',
+                                height: '36px',
+                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
                                 borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
