@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
             setIsLoading(false);
 
             if (resultado.success) {
-                alert(`✅ ${resultado.message}\n\n👋 Bem-vindo de volta, ${resultado.usuario?.nomeCompleto}!`);
+                // Login bem-sucedido, redirecionar para dashboard
                 window.location.href = '/dashboard';
             } else {
                 alert(`❌ ${resultado.message}`);
@@ -67,9 +67,18 @@ const LoginPage: React.FC = () => {
             setIsLoading(false);
 
             if (resultado.success) {
-                alert(`🎉 Cadastro realizado com sucesso!\n\n👤 ${formData.nomeCompleto}\n📧 ${formData.email}\n\n✅ Conta criada no FIAP Fintech!\n🔐 Agora faça o login para acessar`);
+                // Mudar para aba de login automaticamente e manter email preenchido - SEM POPUP
                 setActiveTab('login');
                 setFormData({ email: formData.email, senha: '', nomeCompleto: '', dataNascimento: '', genero: 'MASCULINO' });
+                
+                // Feedback visual sutil no campo de email
+                setTimeout(() => {
+                    const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+                    if (emailInput) {
+                        emailInput.style.borderBottomColor = '#10B981';
+                        emailInput.style.transition = 'border-color 0.3s ease';
+                    }
+                }, 100);
             } else {
                 alert(`❌ ${resultado.message}`);
             }
@@ -364,7 +373,7 @@ const LoginPage: React.FC = () => {
                                 marginBottom: '-1px'
                             }}
                         >
-                            ENTRAR
+                            {isLoading ? 'Entrando...' : 'ENTRAR'}
                         </button>
                         <button
                             type="button"
@@ -649,9 +658,9 @@ const LoginPage: React.FC = () => {
                                     transition: 'all 0.2s',
                                     boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)'
                                 }}
-                            >
-                                {isLoading ? 'Criando conta...' : 'CADASTRAR'}
-                            </button>
+                        >
+                            {isLoading ? 'Criando conta...' : 'CADASTRAR'}
+                        </button>
                         </form>
                     )}
 

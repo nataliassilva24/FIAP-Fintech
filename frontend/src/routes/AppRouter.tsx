@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 // Pages
 import HomePage from '../pages/Home/HomePage';
 import LoginPage from '../pages/Auth/LoginPage';
-// import DashboardPage from '../pages/Dashboard/DashboardPage';
+import DashboardPage from '../pages/Dashboard/DashboardPage';
 // import TransactionsPage from '../pages/Transactions/TransactionsPage';
 // import InvestmentsPage from '../pages/Investments/InvestmentsPage';
 // import GoalsPage from '../pages/Goals/GoalsPage';
@@ -89,8 +89,10 @@ const AppRouter: React.FC = () => {
                 <Route path="/home" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 
+                {/* Real Dashboard page */}
+                <Route path="/dashboard" element={<DashboardPage />} />
+                
                 {/* Placeholder pages (to be extracted) */}
-                <Route path="/dashboard" element={<PlaceholderPage pageName="Dashboard" />} />
                 <Route path="/transacoes" element={<PlaceholderPage pageName="Transações" />} />
                 <Route path="/investimentos" element={<PlaceholderPage pageName="Investimentos" />} />
                 <Route path="/metas" element={<PlaceholderPage pageName="Metas" />} />

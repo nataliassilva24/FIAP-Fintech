@@ -165,8 +165,17 @@ export const GlobalStyles = createGlobalStyle`
     }
   }
 
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
   .pulse {
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .loading-spinner {
+    animation: spin 1s linear infinite;
   }
 
   /* Responsive font sizes */
