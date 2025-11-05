@@ -269,8 +269,9 @@ const InvestmentsPage: React.FC = () => {
                             </div>
                         </div>
 
-                    {/* User Dropdown */}
-                    <UserDropdown onLogout={handleLogout} />
+                        {/* User Dropdown */}
+                        <UserDropdown onLogout={handleLogout} />
+                    </div>
                 </div>
             </header>
 
