@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
-@Profile("dev") // Só executa no profile de desenvolvimento
+@Profile("never") // Desabilitado - dados reais já existem no Oracle FIAP
 public class DataLoader implements CommandLineRunner {
 
     @Autowired
