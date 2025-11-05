@@ -197,79 +197,87 @@ const GoalsPage: React.FC = () => {
                     justifyContent: 'space-between',
                     height: '72px'
                 }}>
-                    {/* Logo e Navegação */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
-                        {/* Logo */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{
-                                width: '44px',
-                                height: '44px',
-                                background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
-                                borderRadius: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '20px',
-                                fontWeight: 'bold',
-                                color: 'white',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                            }}>
-                                F
-                            </div>
-                            <div>
-                                <h1 style={{
-                                    color: '#1e293b',
-                                    fontSize: '22px',
-                                    fontWeight: '700',
-                                    margin: 0,
-                                    letterSpacing: '-0.025em'
-                                }}>
-                                    FIAP Fintech
-                                </h1>
-                                <p style={{
-                                    color: '#64748b',
-                                    fontSize: '12px',
-                                    margin: 0,
-                                    fontWeight: '500'
-                                }}>
-                                    Controle Financeiro
-                                </p>
-                            </div>
+                    {/* Logo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            width: '44px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}>
+                            F
                         </div>
-
-                        {/* Navegação */}
-                        <nav style={{ display: 'flex', gap: '32px' }}>
-                            {[
-                                { name: 'Dashboard', path: '/dashboard', active: false },
-                                { name: 'Transações', path: '/transacoes', active: false },
-                                { name: 'Investimentos', path: '/investimentos', active: false },
-                                { name: 'Metas', path: '/metas', active: true }
-                            ].map((item, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => window.location.href = item.path}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        color: item.active ? '#1e40af' : '#64748b',
-                                        fontSize: '15px',
-                                        fontWeight: item.active ? '600' : '500',
-                                        cursor: 'pointer',
-                                        padding: '8px 0',
-                                        position: 'relative',
-                                        borderBottom: item.active ? '2px solid #1e40af' : '2px solid transparent',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    {item.name}
-                                </button>
-                            ))}
-                        </nav>
+                        <div>
+                            <h1 style={{
+                                color: '#1e293b',
+                                fontSize: '22px',
+                                fontWeight: '700',
+                                margin: 0,
+                                letterSpacing: '-0.025em'
+                            }}>
+                                FIAP Fintech
+                            </h1>
+                            <p style={{
+                                color: '#64748b',
+                                fontSize: '12px',
+                                margin: 0,
+                                fontWeight: '500'
+                            }}>
+                                Controle Financeiro
+                            </p>
+                        </div>
                     </div>
 
-                    {/* User Info e Logout */}
+                    {/* Navigation */}
+                    <nav style={{ display: 'flex', gap: '32px' }}>
+                        {[
+                            { name: 'Dashboard', path: '/dashboard' },
+                            { name: 'Transações', path: '/transacoes' },
+                            { name: 'Investimentos', path: '/investimentos' },
+                            { name: 'Metas', path: '/metas' }
+                        ].map((item, index) => (
+                            <button
+                                key={index}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: index === 3 ? '#1e40af' : '#64748b',
+                                    fontSize: '15px',
+                                    fontWeight: index === 3 ? '600' : '500',
+                                    cursor: 'pointer',
+                                    padding: '8px 0',
+                                    position: 'relative',
+                                    borderBottom: index === 3 ? '2px solid #1e40af' : '2px solid transparent',
+                                    transition: 'color 0.2s'
+                                }}
+                                onClick={() => {
+                                    if (item.path !== '/metas') {
+                                        window.location.href = item.path;
+                                    }
+                                }}
+                            >
+                                {item.name}
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* User Menu */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '12px',
+                            padding: '8px 16px',
+                            background: '#f1f5f9',
+                            borderRadius: '24px'
+                        }}>
                             <div style={{
                                 width: '32px',
                                 height: '32px',
