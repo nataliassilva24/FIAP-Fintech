@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Favicon BTG Style -->
+    <link rel="icon" type="image/svg+xml" href="/btg-favicon.svg" />
+
+    <!-- Fonts - Inspirado BTG -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Meta Tags -->
+    <meta name="description" content="FIAP Fintech - Sistema de gestão financeira pessoal" />
+    <meta name="keywords" content="fintech, investimentos, finanças, BTG, FIAP" />
+    <meta name="author" content="FIAP Student" />
+
+    <!-- Theme Color (BTG Blue) -->
+    <meta name="theme-color" content="#1E40AF" />
+
+    <title>FIAP Fintech - Sua gestão financeira</title>
+
+    <style>
+        /* Reset básico inspirado no BTG */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0F172A;
+            color: #F1F5F9;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Loading spinner BTG style */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #334155;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/index-2f72df9e.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/vendor-92c95717.js">
+  <link rel="modulepreload" crossorigin href="/assets/ui-f6150dad.js">
+  <link rel="modulepreload" crossorigin href="/assets/router-8ffee5cc.js">
+</head>
+
+<body>
+    <div id="root">
+        <!-- Fallback loading -->
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    
+</body>
+
+</html>
+
+

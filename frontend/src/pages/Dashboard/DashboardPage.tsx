@@ -62,6 +62,69 @@ const DashboardPage: React.FC = () => {
         };
     };
 
+    // Função para adaptar o layout baseado no valor - Sem quebra de linha
+    const getAdaptiveLayout = (value: number) => {
+        const formattedValue = dashboardService.formatCurrency(value);
+        const valueLength = formattedValue.length;
+        
+        // Casos especiais para valores muito pequenos ou zero
+        if (value === 0) {
+            return {
+                outerSize: 110,
+                innerSize: 80,
+                fontSize: '14px',
+                containerPadding: '8px'
+            };
+        }
+        
+        if (value < 100) { // R$ 99,99
+            return {
+                outerSize: 120,
+                innerSize: 85,
+                fontSize: '15px',
+                containerPadding: '8px'
+            };
+        }
+        
+        // Adaptação baseada no comprimento do texto formatado - mais generoso
+        if (valueLength <= 8) { // R$ 999,99
+            return {
+                outerSize: 130,
+                innerSize: 90,
+                fontSize: '15px',
+                containerPadding: '8px'
+            };
+        } else if (valueLength <= 11) { // R$ 99.999,99
+            return {
+                outerSize: 150,
+                innerSize: 110,
+                fontSize: '13px',
+                containerPadding: '8px'
+            };
+        } else if (valueLength <= 14) { // R$ 999.999,99
+            return {
+                outerSize: 170,
+                innerSize: 130,
+                fontSize: '12px',
+                containerPadding: '8px'
+            };
+        } else if (valueLength <= 17) { // R$ 999.999.999,99
+            return {
+                outerSize: 190,
+                innerSize: 150,
+                fontSize: '11px',
+                containerPadding: '8px'
+            };
+        } else { // Valores extremamente grandes
+            return {
+                outerSize: 210,
+                innerSize: 170,
+                fontSize: '10px',
+                containerPadding: '8px'
+            };
+        }
+    };
+
     // Carregar dados do dashboard
     useEffect(() => {
         if (usuario?.idUsuario) {
@@ -466,49 +529,61 @@ const DashboardPage: React.FC = () => {
                                 {getChartLabels().despesas}
                             </h3>
                             
-                            {/* Gráfico de Pizza Centralizado */}
+                            {/* Gráfico de Pizza Centralizado - Layout Adaptável */}
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center',
                                 marginBottom: '24px'
                             }}>
-                                <div style={{
-                                    width: '120px',
-                                    height: '120px',
-                                    borderRadius: '50%',
-                                    background: `conic-gradient(
-                                        from 0deg,
-                                        #EF4444 0deg 120deg,
-                                        #F59E0B 120deg 200deg,
-                                        #8B5CF6 200deg 280deg,
-                                        #E5E7EB 280deg 360deg
-                                    )`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'relative'
-                                }}>
-                                    <div style={{
-                                        width: '80px',
-                                        height: '80px',
-                                        borderRadius: '50%',
-                                        background: '#FFFFFF',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                                    }}>
-                                        <div style={{ 
-                                            fontSize: '16px', 
-                                            fontWeight: '700', 
-                                            color: '#1F2937'
+                                {(() => {
+                                    const totalDespesas = dashboardData?.despesasPorCategoria.reduce((total, cat) => total + cat.valor, 0) || 0;
+                                    const layout = getAdaptiveLayout(totalDespesas);
+                                    
+                                    return (
+                                        <div style={{
+                                            width: `${layout.outerSize}px`,
+                                            height: `${layout.outerSize}px`,
+                                            borderRadius: '50%',
+                                            background: `conic-gradient(
+                                                from 0deg,
+                                                #EF4444 0deg 120deg,
+                                                #F59E0B 120deg 200deg,
+                                                #8B5CF6 200deg 280deg,
+                                                #E5E7EB 280deg 360deg
+                                            )`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            position: 'relative',
+                                            transition: 'all 0.3s ease'
                                         }}>
-                                            {loading ? '⏳' : dashboardService.formatCurrency(
-                                                dashboardData?.despesasPorCategoria.reduce((total, cat) => total + cat.valor, 0) || 0
-                                            )}
+                                            <div style={{
+                                                width: `${layout.innerSize}px`,
+                                                height: `${layout.innerSize}px`,
+                                                borderRadius: '50%',
+                                                background: '#FFFFFF',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                                                padding: layout.containerPadding
+                                            }}>
+                                                <div style={{ 
+                                                    fontSize: layout.fontSize, 
+                                                    fontWeight: '700', 
+                                                    color: '#1F2937',
+                                                    textAlign: 'center',
+                                                    lineHeight: '1.2',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis'
+                                                }}>
+                                                    {loading ? '⏳' : dashboardService.formatCurrency(totalDespesas)}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Legenda Horizontal - Quebra automática */}
@@ -582,48 +657,60 @@ const DashboardPage: React.FC = () => {
                                 {getChartLabels().receitas}
                             </h3>
                             
-                            {/* Gráfico de Pizza Centralizado */}
+                            {/* Gráfico de Pizza Centralizado - Layout Adaptável */}
                             <div style={{
                                 display: 'flex',
                                 justifyContent: 'center',
                                 marginBottom: '24px'
                             }}>
-                                <div style={{
-                                    width: '120px',
-                                    height: '120px',
-                                    borderRadius: '50%',
-                                    background: `conic-gradient(
-                                        from 0deg,
-                                        #10B981 0deg 240deg,
-                                        #34D399 240deg 300deg,
-                                        #E5E7EB 300deg 360deg
-                                    )`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    position: 'relative'
-                                }}>
-                                    <div style={{
-                                        width: '80px',
-                                        height: '80px',
-                                        borderRadius: '50%',
-                                        background: '#FFFFFF',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
-                                    }}>
-                                        <div style={{ 
-                                            fontSize: '16px', 
-                                            fontWeight: '700', 
-                                            color: '#1F2937'
+                                {(() => {
+                                    const totalReceitas = dashboardData?.receitasPorCategoria.reduce((total, cat) => total + cat.valor, 0) || 0;
+                                    const layout = getAdaptiveLayout(totalReceitas);
+                                    
+                                    return (
+                                        <div style={{
+                                            width: `${layout.outerSize}px`,
+                                            height: `${layout.outerSize}px`,
+                                            borderRadius: '50%',
+                                            background: `conic-gradient(
+                                                from 0deg,
+                                                #10B981 0deg 240deg,
+                                                #34D399 240deg 300deg,
+                                                #E5E7EB 300deg 360deg
+                                            )`,
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            position: 'relative',
+                                            transition: 'all 0.3s ease'
                                         }}>
-                                            {loading ? '⏳' : dashboardService.formatCurrency(
-                                                dashboardData?.receitasPorCategoria.reduce((total, cat) => total + cat.valor, 0) || 0
-                                            )}
+                                            <div style={{
+                                                width: `${layout.innerSize}px`,
+                                                height: `${layout.innerSize}px`,
+                                                borderRadius: '50%',
+                                                background: '#FFFFFF',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                                                padding: layout.containerPadding
+                                            }}>
+                                                <div style={{ 
+                                                    fontSize: layout.fontSize, 
+                                                    fontWeight: '700', 
+                                                    color: '#1F2937',
+                                                    textAlign: 'center',
+                                                    lineHeight: '1.2',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis'
+                                                }}>
+                                                    {loading ? '⏳' : dashboardService.formatCurrency(totalReceitas)}
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    );
+                                })()}
                             </div>
 
                             {/* Legenda Horizontal - Quebra automática */}

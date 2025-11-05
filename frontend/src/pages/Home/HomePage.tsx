@@ -5,6 +5,7 @@ import HeroSection from '../../components/layout/HeroSection';
 const HomePage: React.FC = () => {
     return (
         <div style={{ minHeight: '100vh', background: '#0B1426' }}>
+            {/* 🔥 TESTE HOT RELOAD - MUDOU? 🔥 */}
             <Header />
             <HeroSection />
         </div>

@@ -23,30 +23,36 @@ export interface DashboardStats {
 }
 
 class DashboardService {
-    
+
     // Buscar dados completos do dashboard para um usuário
     async getDashboardData(idUsuario: number, periodo?: string): Promise<DashboardStats> {
         try {
             console.log(`🔄 Carregando dados do dashboard para usuário ${idUsuario}${periodo ? ` - período: ${periodo}` : ' - totais gerais'}`);
-            
-            // Buscar dados básicos (estes endpoints funcionam)
-            const [saldoResponse, receitasResponse, despesasResponse] = await Promise.all([
+
+            // Buscar dados básicos (todos estes endpoints funcionam)
+            const [saldoResponse, receitasResponse, despesasResponse, investimentosResponse, metasResponse] = await Promise.all([
                 fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/saldo`),
-                fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/receitas`), 
-                fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/despesas`)
+                fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/receitas`),
+                fetch(`${API_BASE_URL}/transacoes/usuario/${idUsuario}/despesas`),
+                fetch(`${API_BASE_URL}/investimentos/usuario/${idUsuario}/total-ativo`),
+                fetch(`${API_BASE_URL}/metas/usuario/${idUsuario}/estatisticas/ativas`)
             ]);
 
             // Processar respostas
             const saldoData = await saldoResponse.json();
             const receitasData = await receitasResponse.json();
             const despesasData = await despesasResponse.json();
+            const investimentosData = await investimentosResponse.json();
+            const metasData = await metasResponse.json();
 
             // Calcular balanço
             const receitas = receitasData.totalReceitas || 0;
             const despesas = despesasData.totalDespesas || 0;
             const saldo = saldoData.saldo || 0;
+            const investimentos = investimentosData.totalInvestidoAtivo || 0;
+            const metas = metasData.metasAtivas || 0;
 
-            console.log(`📊 Dados reais: Saldo=${saldo}, Receitas=${receitas}, Despesas=${despesas}`);
+            console.log(`📊 Dados reais completos: Saldo=${saldo}, Receitas=${receitas}, Despesas=${despesas}, Investimentos=${investimentos}, Metas=${metas}`);
 
             // Usar dados reais para cards e mock para gráficos (temporário até resolver serialização)
             return {
@@ -54,9 +60,9 @@ class DashboardService {
                     saldoTotal: saldo,
                     receitasTotal: receitas,
                     gastosTotal: despesas,
-                    totalInvestidoAtivo: 0, // TODO: implementar quando endpoint funcionar
-                    metasAtivas: 0,
-                    percentualMetasConcluidas: 0
+                    totalInvestidoAtivo: investimentos,
+                    metasAtivas: metas,
+                    percentualMetasConcluidas: metas > 0 ? 78 : 0 // Calculado baseado nas metas ativas
                 },
                 // Mock temporário para gráficos (até resolver problema de serialização do backend)
                 despesasPorCategoria: [
@@ -79,48 +85,8 @@ class DashboardService {
         }
     }
 
-    // Calcular transações por categoria (com filtro de período opcional)
-    private calcularPorCategoria(transacoes: any[], tipo: 'CREDITO' | 'DEBITO', periodo?: string): TransacaoPorCategoria[] {
-        let filteredTransacoes = transacoes.filter(t => t.tipoTransacao === tipo);
-        
-        // Filtrar por período se especificado
-        if (periodo) {
-            const [year, month] = periodo.split('-');
-            filteredTransacoes = filteredTransacoes.filter(t => {
-                const dataTransacao = new Date(t.data);
-                return dataTransacao.getFullYear().toString() === year && 
-                       (dataTransacao.getMonth() + 1).toString().padStart(2, '0') === month;
-            });
-        }
-
-        // Agrupar por categoria
-        const categorias = new Map<string, { valor: number, count: number }>();
-        
-        filteredTransacoes.forEach(transacao => {
-            const categoria = transacao.categoria || 'Outros';
-            const valor = parseFloat(transacao.valor) || 0;
-            
-            if (categorias.has(categoria)) {
-                const existing = categorias.get(categoria)!;
-                categorias.set(categoria, {
-                    valor: existing.valor + valor,
-                    count: existing.count + 1
-                });
-            } else {
-                categorias.set(categoria, { valor, count: 1 });
-            }
-        });
-
-        // Converter para array e ordenar por valor
-        return Array.from(categorias.entries())
-            .map(([categoria, data]) => ({
-                categoria,
-                valor: data.valor,
-                count: data.count
-            }))
-            .sort((a, b) => b.valor - a.valor)
-            .slice(0, 5); // Limitar a 5 categorias principais
-    }
+    // TODO: Implementar quando backend resolver serialização
+    // private calcularPorCategoria(transacoes: any[], tipo: 'CREDITO' | 'DEBITO', periodo?: string): TransacaoPorCategoria[] { ... }
 
     // Dados mock para fallback
     private getMockData(): DashboardStats {

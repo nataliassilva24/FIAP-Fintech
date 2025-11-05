@@ -1,5 +1,6 @@
 package com.fintech.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fintech.enums.TipoTransacao;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -46,7 +47,8 @@ public class Transacao {
     @Column(name = "DATA_TRANSACAO", nullable = false)
     private LocalDate data;
 
-    // Referência para o usuário
+    // Referência para o usuário (ignorada na serialização JSON para evitar problemas com Hibernate proxy)
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ID_USUARIO", insertable = false, updatable = false)
     private Usuario usuario;
