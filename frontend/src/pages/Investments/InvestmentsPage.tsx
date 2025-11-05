@@ -134,91 +134,94 @@ const InvestmentsPage: React.FC = () => {
             background: '#f8fafc',
             fontFamily: '"Inter", sans-serif'
         }}>
-            {/* Header */}
+            {/* Header Clean */}
             <header style={{
                 background: '#ffffff',
                 borderBottom: '1px solid #e2e8f0',
-                padding: '16px 24px',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
                 position: 'sticky',
                 top: 0,
-                zIndex: 100
+                zIndex: 50
             }}>
                 <div style={{
                     maxWidth: '1400px',
                     margin: '0 auto',
+                    padding: '0 24px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    height: '72px'
                 }}>
-                    {/* Logo e Navegação */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
-                        {/* Logo */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <div style={{
-                                width: '32px',
-                                height: '32px',
-                                background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
-                                borderRadius: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '20px',
-                                fontWeight: 'bold',
-                                color: 'white',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                            }}>
-                                F
-                            </div>
-                            <div>
-                                <h1 style={{
-                                    color: '#1e293b',
-                                    fontSize: '22px',
-                                    fontWeight: '700',
-                                    margin: 0,
-                                    letterSpacing: '-0.025em'
-                                }}>
-                                    FIAP Fintech
-                                </h1>
-                                <p style={{
-                                    color: '#64748b',
-                                    fontSize: '12px',
-                                    margin: 0,
-                                    fontWeight: '500'
-                                }}>
-                                    Controle Financeiro
-                                </p>
-                            </div>
+                    {/* Logo */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                            width: '44px',
+                            height: '44px',
+                            background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
+                            borderRadius: '12px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '20px',
+                            fontWeight: 'bold',
+                            color: 'white',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}>
+                            F
                         </div>
-
-                        {/* Navegação */}
-                        <nav style={{ display: 'flex', gap: '32px' }}>
-                            {[
-                                { name: 'Dashboard', path: '/dashboard', active: false },
-                                { name: 'Transações', path: '/transacoes', active: false },
-                                { name: 'Investimentos', path: '/investimentos', active: true },
-                                { name: 'Metas', path: '/metas', active: false }
-                            ].map((item, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => window.location.href = item.path}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        color: item.active ? '#1e40af' : '#64748b',
-                                        fontSize: '15px',
-                                        fontWeight: item.active ? '600' : '500',
-                                        cursor: 'pointer',
-                                        padding: '8px 0',
-                                        position: 'relative',
-                                        borderBottom: item.active ? '2px solid #1e40af' : '2px solid transparent',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    {item.name}
-                                </button>
-                            ))}
-                        </nav>
+                        <div>
+                            <h1 style={{
+                                color: '#1e293b',
+                                fontSize: '22px',
+                                fontWeight: '700',
+                                margin: 0,
+                                letterSpacing: '-0.025em'
+                            }}>
+                                FIAP Fintech
+                            </h1>
+                            <p style={{
+                                color: '#64748b',
+                                fontSize: '12px',
+                                margin: 0,
+                                fontWeight: '500'
+                            }}>
+                                Controle Financeiro
+                            </p>
+                        </div>
                     </div>
+
+                    {/* Navigation */}
+                    <nav style={{ display: 'flex', gap: '32px' }}>
+                        {[
+                            { name: 'Dashboard', path: '/dashboard' },
+                            { name: 'Transações', path: '/transacoes' },
+                            { name: 'Investimentos', path: '/investimentos' },
+                            { name: 'Metas', path: '/metas' }
+                        ].map((item, index) => (
+                            <button
+                                key={index}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: index === 2 ? '#1e40af' : '#64748b',
+                                    fontSize: '15px',
+                                    fontWeight: index === 2 ? '600' : '500',
+                                    cursor: 'pointer',
+                                    padding: '8px 0',
+                                    position: 'relative',
+                                    borderBottom: index === 2 ? '2px solid #1e40af' : '2px solid transparent',
+                                    transition: 'color 0.2s'
+                                }}
+                                onClick={() => {
+                                    if (item.path !== '/investimentos') {
+                                        window.location.href = item.path;
+                                    }
+                                }}
+                            >
+                                {item.name}
+                            </button>
+                        ))}
+                    </nav>
 
                     {/* User Info e Logout */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>

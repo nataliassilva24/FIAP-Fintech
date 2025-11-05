@@ -179,29 +179,31 @@ const GoalsPage: React.FC = () => {
             background: '#f8fafc',
             fontFamily: '"Inter", sans-serif'
         }}>
-            {/* Header */}
+            {/* Header Clean */}
             <header style={{
                 background: '#ffffff',
                 borderBottom: '1px solid #e2e8f0',
-                padding: '16px 24px',
+                boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
                 position: 'sticky',
                 top: 0,
-                zIndex: 100
+                zIndex: 50
             }}>
                 <div style={{
                     maxWidth: '1400px',
                     margin: '0 auto',
+                    padding: '0 24px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'space-between',
+                    height: '72px'
                 }}>
                     {/* Logo e Navegação */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '48px' }}>
                         {/* Logo */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div style={{
-                                width: '32px',
-                                height: '32px',
+                                width: '44px',
+                                height: '44px',
                                 background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)',
                                 borderRadius: '12px',
                                 display: 'flex',
