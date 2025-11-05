@@ -7,7 +7,7 @@ const ProfilePage: React.FC = () => {
     const usuario = authService.getCurrentUser();
     const [isEditing, setIsEditing] = useState(false);
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-    const [toast, setToast] = useState<{ show: boolean, message: string, type: 'success' | 'error' }>({ show: false, message: '', type: 'success' });
+    const [toast, setToast] = useState<{show: boolean, message: string, type: 'success' | 'error'}>({show: false, message: '', type: 'success'});
     const [saving, setSaving] = useState(false);
 
     // Estado do formulário de edição
@@ -28,21 +28,20 @@ const ProfilePage: React.FC = () => {
         if (!usuario?.idUsuario) return;
 
         if (!formData.nomeCompleto || !formData.email || !formData.dataNascimento) {
-            setToast({ show: true, message: 'Por favor, preencha todos os campos obrigatórios!', type: 'error' });
+            setToast({show: true, message: 'Por favor, preencha todos os campos obrigatórios!', type: 'error'});
             return;
         }
 
         setSaving(true);
         try {
             // Simular chamada para API de atualização de usuário
-            // TODO: Implementar userService.updateUser() se necessário
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay da API
-
-            setToast({ show: true, message: 'Perfil atualizado com sucesso!', type: 'success' });
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            setToast({show: true, message: 'Perfil atualizado com sucesso!', type: 'success'});
             setIsEditing(false);
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
-            setToast({ show: true, message: 'Erro interno. Tente novamente.', type: 'error' });
+            setToast({show: true, message: 'Erro interno. Tente novamente.', type: 'error'});
         } finally {
             setSaving(false);
         }
@@ -181,7 +180,7 @@ const ProfilePage: React.FC = () => {
                                 style={{
                                     background: 'none',
                                     border: 'none',
-                                    color: index === 4 ? '#1e40af' : '#64748b', // Perfil ativo
+                                    color: index === 4 ? '#1e40af' : '#64748b',
                                     fontSize: '15px',
                                     fontWeight: index === 4 ? '600' : '500',
                                     cursor: 'pointer',
@@ -338,8 +337,76 @@ const ProfilePage: React.FC = () => {
                     border: '1px solid #e2e8f0',
                     boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                 }}>
+                    {/* Avatar e Info Principal */}
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '24px',
+                        marginBottom: '32px',
+                        padding: '24px',
+                        background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                        borderRadius: '12px',
+                        border: '1px solid #bfdbfe'
+                    }}>
+                        <div style={{
+                            width: '80px',
+                            height: '80px',
+                            background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
+                            fontSize: '24px',
+                            fontWeight: '700',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}>
+                            {usuario.nomeCompleto.split(' ').map(name => name[0]).join('').substring(0, 2)}
+                        </div>
+                        <div>
+                            <h3 style={{
+                                fontSize: '24px',
+                                fontWeight: '700',
+                                color: '#1e293b',
+                                margin: '0 0 4px 0'
+                            }}>
+                                {usuario.nomeCompleto}
+                            </h3>
+                            <p style={{
+                                fontSize: '16px',
+                                color: '#64748b',
+                                margin: '0 0 8px 0'
+                            }}>
+                                {usuario.email}
+                            </p>
+                            <div style={{
+                                display: 'flex',
+                                gap: '12px',
+                                alignItems: 'center'
+                            }}>
+                                <span style={{
+                                    fontSize: '14px',
+                                    color: '#10b981',
+                                    background: '#f0fdf4',
+                                    padding: '4px 12px',
+                                    borderRadius: '16px',
+                                    border: '1px solid #bbf7d0',
+                                    fontWeight: '600'
+                                }}>
+                                    ✅ Conta Ativa
+                                </span>
+                                <span style={{
+                                    fontSize: '14px',
+                                    color: '#64748b'
+                                }}>
+                                    📅 Membro desde {new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
                     {isEditing ? (
-                        /* Modo de Edição */
+                        /* Formulário de Edição */
                         <form onSubmit={handleSaveProfile}>
                             <div style={{
                                 display: 'grid',
@@ -407,6 +474,36 @@ const ProfilePage: React.FC = () => {
                                     />
                                 </div>
 
+                                {/* Data de Nascimento */}
+                                <div>
+                                    <label style={{
+                                        display: 'block',
+                                        marginBottom: '8px',
+                                        fontSize: '14px',
+                                        fontWeight: '600',
+                                        color: '#374151'
+                                    }}>
+                                        Data de Nascimento *
+                                    </label>
+                                    <input
+                                        type="date"
+                                        name="dataNascimento"
+                                        value={formData.dataNascimento}
+                                        onChange={handleInputChange}
+                                        required
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 16px',
+                                            border: '1px solid #D1D5DB',
+                                            borderRadius: '8px',
+                                            fontSize: '16px',
+                                            background: '#ffffff',
+                                            color: '#1F2937',
+                                            boxSizing: 'border-box'
+                                        }}
+                                    />
+                                </div>
+
                                 {/* Gênero */}
                                 <div>
                                     <label style={{
@@ -440,37 +537,7 @@ const ProfilePage: React.FC = () => {
                                     </select>
                                 </div>
 
-                                {/* Data de Nascimento */}
-                                <div>
-                                    <label style={{
-                                        display: 'block',
-                                        marginBottom: '8px',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        color: '#374151'
-                                    }}>
-                                        Data de Nascimento *
-                                    </label>
-                                    <input
-                                        type="date"
-                                        name="dataNascimento"
-                                        value={formData.dataNascimento}
-                                        onChange={handleInputChange}
-                                        required
-                                        style={{
-                                            width: '100%',
-                                            padding: '12px 16px',
-                                            border: '1px solid #D1D5DB',
-                                            borderRadius: '8px',
-                                            fontSize: '16px',
-                                            background: '#ffffff',
-                                            color: '#1F2937',
-                                            boxSizing: 'border-box'
-                                        }}
-                                    />
-                                </div>
-
-                                {/* Idade (calculada) */}
+                                {/* Idade (só visualização) */}
                                 <div>
                                     <label style={{
                                         display: 'block',
@@ -550,300 +617,17 @@ const ProfilePage: React.FC = () => {
                                             Salvando...
                                         </>
                                     ) : (
-                                        <>
-                                            ✏️ Salvar Alterações
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    ) : (
-                        /* Modo de Visualização */
-                        <div>
-                            {/* Avatar e Info Principal */}
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '24px',
-                                marginBottom: '32px',
-                                padding: '24px',
-                                background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                                borderRadius: '12px',
-                                border: '1px solid #bfdbfe'
-                            }}>
-                                <div style={{
-                                    width: '80px',
-                                    height: '80px',
-                                    background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                                    borderRadius: '50%',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontSize: '24px',
-                                    fontWeight: '700',
-                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                                }}>
-                                    {usuario.nomeCompleto.split(' ').map(name => name[0]).join('').substring(0, 2)}
-                                </div>
-                                <div>
-                                    <h3 style={{
-                                        fontSize: '24px',
-                                        fontWeight: '700',
-                                        color: '#1e293b',
-                                        margin: '0 0 4px 0'
-                                    }}>
-                                        {usuario.nomeCompleto}
-                                    </h3>
-                                    <p style={{
-                                        fontSize: '16px',
-                                        color: '#64748b',
-                                        margin: '0 0 8px 0'
-                                    }}>
-                                        {usuario.email}
-                                    </p>
-                                    <div style={{
-                                        display: 'flex',
-                                        gap: '12px',
-                                        alignItems: 'center'
-                                    }}>
-                                        <span style={{
-                                            fontSize: '14px',
-                                            color: '#10b981',
-                                            background: '#f0fdf4',
-                                            padding: '4px 12px',
-                                            borderRadius: '16px',
-                                            border: '1px solid #bbf7d0',
-                                            fontWeight: '600'
-                                        }}>
-                                            ✅ Conta Ativa
-                                        </span>
-                                        <span style={{
-                                            fontSize: '14px',
-                                            color: '#64748b'
-                                        }}>
-                                            📅 Membro desde {new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Informações Detalhadas */}
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: '1fr 1fr',
-                                gap: '24px'
-                            }}>
-                                {/* Dados Pessoais */}
-                                <div>
-                                    <h4 style={{
-                                        fontSize: '18px',
-                                        fontWeight: '600',
-                                        color: '#1e293b',
-                                        marginBottom: '16px'
-                                    }}>
-                                        📋 Dados Pessoais
-                                    </h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Nome Completo:</span>
-                                            <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
-                                                {usuario.nomeCompleto}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Data de Nascimento:</span>
-                                            <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
-                                                {new Date(usuario.dataNascimento).toLocaleDateString('pt-BR')} ({usuario.idade} anos)
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Gênero:</span>
-                                            <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
-                                                {usuario.genero === 'MASCULINO' ? 'Masculino' : usuario.genero === 'FEMININO' ? 'Feminino' : 'Outro'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Informações da Conta */}
-                                <div>
-                                    <h4 style={{
-                                        fontSize: '18px',
-                                        fontWeight: '600',
-                                        color: '#1e293b',
-                                        marginBottom: '16px'
-                                    }}>
-                                        🔐 Informações da Conta
-                                    </h4>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Email:</span>
-                                            <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
-                                                {usuario.email}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Data de Cadastro:</span>
-                                            <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
-                                                {new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Status da Conta:</span>
-                                            <div style={{
-                                                display: 'inline-block',
-                                                color: '#10b981',
-                                                background: '#f0fdf4',
-                                                padding: '4px 12px',
-                                                borderRadius: '16px',
-                                                border: '1px solid #bbf7d0',
-                                                fontSize: '14px',
-                                                fontWeight: '600',
-                                                marginTop: '4px'
-                                            }}>
-                                                ✅ Ativa
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Botões de Ação */}
-                            <div style={{
-                                display: 'flex',
-                                gap: '12px',
-                                justifyContent: 'flex-end'
-                            }}>
-                                <button
-                                    type="button"
-                                    onClick={cancelEdit}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: '1px solid #E5E7EB',
-                                        background: '#ffffff',
-                                        color: '#6B7280',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        transition: 'all 0.2s'
-                                    }}
-                                >
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    style={{
-                                        padding: '12px 24px',
-                                        border: 'none',
-                                        background: saving ? '#9CA3AF' : 'linear-gradient(135deg, #2563EB 0%, #1E40AF 100%)',
-                                        color: 'white',
-                                        borderRadius: '8px',
-                                        cursor: saving ? 'not-allowed' : 'pointer',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        transition: 'all 0.2s',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px'
-                                    }}
-                                >
-                                    {saving ? (
-                                        <>
-                                            <div style={{
-                                                width: '16px',
-                                                height: '16px',
-                                                border: '2px solid rgba(255,255,255,0.3)',
-                                                borderTop: '2px solid white',
-                                                borderRadius: '50%',
-                                                animation: 'spin 1s linear infinite'
-                                            }}></div>
-                                            Salvando...
-                                        </>
-                                    ) : (
                                         '✏️ Salvar Alterações'
                                     )}
                                 </button>
                             </div>
                         </form>
                     ) : (
-                    /* Modo de Visualização */
-                    <div>
-                        {/* Avatar e Info Principal */}
-                        <div style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '24px',
-                            marginBottom: '32px',
-                            padding: '24px',
-                            background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
-                            borderRadius: '12px',
-                            border: '1px solid #bfdbfe'
-                        }}>
-                            <div style={{
-                                width: '80px',
-                                height: '80px',
-                                background: 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)',
-                                borderRadius: '50%',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                color: 'white',
-                                fontSize: '24px',
-                                fontWeight: '700',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                            }}>
-                                {usuario.nomeCompleto.split(' ').map(name => name[0]).join('').substring(0, 2)}
-                            </div>
-                            <div>
-                                <h3 style={{
-                                    fontSize: '24px',
-                                    fontWeight: '700',
-                                    color: '#1e293b',
-                                    margin: '0 0 4px 0'
-                                }}>
-                                    {usuario.nomeCompleto}
-                                </h3>
-                                <p style={{
-                                    fontSize: '16px',
-                                    color: '#64748b',
-                                    margin: '0 0 8px 0'
-                                }}>
-                                    {usuario.email}
-                                </p>
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '12px',
-                                    alignItems: 'center'
-                                }}>
-                                    <span style={{
-                                        fontSize: '14px',
-                                        color: '#10b981',
-                                        background: '#f0fdf4',
-                                        padding: '4px 12px',
-                                        borderRadius: '16px',
-                                        border: '1px solid #bbf7d0',
-                                        fontWeight: '600'
-                                    }}>
-                                        ✅ Conta Ativa
-                                    </span>
-                                    <span style={{
-                                        fontSize: '14px',
-                                        color: '#64748b'
-                                    }}>
-                                        📅 Membro desde {new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Informações Detalhadas */}
+                        /* Informações de Visualização */
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: '1fr 1fr',
-                            gap: '24px'
+                            gap: '32px'
                         }}>
                             {/* Dados Pessoais */}
                             <div>
@@ -851,11 +635,14 @@ const ProfilePage: React.FC = () => {
                                     fontSize: '18px',
                                     fontWeight: '600',
                                     color: '#1e293b',
-                                    marginBottom: '16px'
+                                    marginBottom: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
                                 }}>
                                     📋 Dados Pessoais
                                 </h4>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <div>
                                         <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Nome Completo:</span>
                                         <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
@@ -883,11 +670,14 @@ const ProfilePage: React.FC = () => {
                                     fontSize: '18px',
                                     fontWeight: '600',
                                     color: '#1e293b',
-                                    marginBottom: '16px'
+                                    marginBottom: '20px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
                                 }}>
                                     🔐 Informações da Conta
                                 </h4>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                                     <div>
                                         <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Email:</span>
                                         <div style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginTop: '4px' }}>
@@ -902,16 +692,16 @@ const ProfilePage: React.FC = () => {
                                     </div>
                                     <div>
                                         <span style={{ color: '#64748b', fontSize: '14px', fontWeight: '500' }}>Status da Conta:</span>
-                                        <div style={{
+                                        <div style={{ 
                                             display: 'inline-block',
                                             color: '#10b981',
                                             background: '#f0fdf4',
-                                            padding: '4px 12px',
+                                            padding: '6px 12px',
                                             borderRadius: '16px',
                                             border: '1px solid #bbf7d0',
                                             fontSize: '14px',
                                             fontWeight: '600',
-                                            marginTop: '4px'
+                                            marginTop: '6px'
                                         }}>
                                             ✅ Ativa
                                         </div>
@@ -919,7 +709,6 @@ const ProfilePage: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
                     )}
                 </div>
             </main>
@@ -941,7 +730,7 @@ const ProfilePage: React.FC = () => {
                 isOpen={toast.show}
                 message={toast.message}
                 type={toast.type}
-                onClose={() => setToast({ ...toast, show: false })}
+                onClose={() => setToast({...toast, show: false})}
             />
 
             {/* CSS para animações */}
