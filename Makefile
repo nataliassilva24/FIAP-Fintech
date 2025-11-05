@@ -118,7 +118,7 @@ start-frontend: ## Inicia o frontend React em background
 
 start-backend: ## Inicia o backend Spring Boot em background
 	@echo "🔧 Iniciando backend..."
-	@mvn spring-boot:run > logs/backend.log 2>&1 &
+	@cd backend && mvn spring-boot:run > logs/backend.log 2>&1 &
 	@echo "⏳ Aguardando backend inicializar..."
 	@for i in $$(seq 1 30); do \
 		if curl -s http://localhost:$(BACKEND_PORT)/api/usuarios >/dev/null 2>&1; then \
